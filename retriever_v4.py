@@ -268,8 +268,8 @@ class RetrieverV4:
             result.image_search_used = True
             self._siglip_text_search(query, score_map)
 
-        # Keyword boost (ไม่ suppress ด้วย ViT — แค่ลด weight ใน RRF)
-        self._keyword_boost(query, score_map)
+        # Keyword boost — ส่ง vit_signal เพื่อ suppress type keyword ที่ขัดกับ ViT
+        self._keyword_boost(query, score_map, vit_signal=vit_signal)
 
         # ════════════════════════════════════════════════
         # LAYER 2: Intent-Aware Text Search
@@ -323,6 +323,8 @@ class RetrieverV4:
 
         result.products         = products[:self.cfg.final_top_k]
         result.total_candidates = len(ranked)
+        result._score_map       = score_map   # expose สำหรับ InstrumentedRetriever
+        result._ranked          = ranked
         return result
 
     def build_enriched_rerank_query(
@@ -710,10 +712,18 @@ class RetrieverV4:
     # KEYWORD BOOST
     # ──────────────────────────────────────────────────────
 
-    def _keyword_boost(self, query: str, score_map: dict):
+    def _keyword_boost(
+        self,
+        query: str,
+        score_map: dict,
+        vit_signal: Optional[ViTSignal] = None,
+    ):
         """
         Exact / fuzzy match + product type keyword
-        ไม่ suppress ด้วย ViT — control ที่ RRF weight แทน
+
+        ถ้า ViT dominant → suppress sideflex/straight type keyword boost
+        เพราะ ViT บอก series แล้ว ไม่ควรให้ keyword ดัน product ต่าง series ขึ้นมา
+        (type boost ยังทำงานถ้าไม่มีรูป หรือ ViT ไม่ dominant)
         """
         import difflib
 
@@ -726,6 +736,13 @@ class RetrieverV4:
         straight_kw = any(w in query_lower for w in [
             "ตรง", "straight", "วิ่งตรง"
         ])
+
+        # ViT dominant → suppress type keyword boost ทั้งหมด
+        # ViT รู้ series แน่แล้ว ไม่ต้องให้ keyword ดัน product ต่าง series
+        vit_dominant = vit_signal and vit_signal.dominant and vit_signal.series
+        if vit_dominant:
+            sideflex_kw = False
+            straight_kw = False
 
         if not query_clean and not sideflex_kw and not straight_kw:
             return
@@ -740,6 +757,12 @@ class RetrieverV4:
             short_pid   = pid_clean.replace("movexchain", "").replace("movexsprocket", "")
             series_str  = re.sub(r'[^a-zA-Z0-9]', '', str(p.get("series", ""))).lower()
             ptype       = str(p.get("product_type", "")).lower()
+
+            # ViT dominant → filter เฉพาะ series ที่ ViT บอก
+            if vit_dominant:
+                prod_nums = re.findall(r'\d+', series_str)
+                if vit_signal.series not in prod_nums:
+                    continue
 
             if query_series:
                 prod_nums = re.findall(r'\d+', series_str)

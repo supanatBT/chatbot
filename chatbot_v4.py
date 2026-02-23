@@ -236,13 +236,14 @@ class InstrumentedRetriever:
             gr = result.graph_result
             self._graph_result = gr
             if gr.seed_products:
-                if gr.compatible:
-                    self._graph_triggered_by = "vit" if result.vit_signal and result.vit_signal.series else "keyword"
-                else:
-                    self._graph_triggered_by = "keyword"
-            # compat
-            self._score_map_snapshot = {}
-            self._ranked_snapshot    = [(p.product_id, p.rrf_score) for p in result.products]
+                self._graph_triggered_by = (
+                    "vit" if result.vit_signal and result.vit_signal.series
+                    else "keyword"
+                )
+
+        # capture score_map จาก result โดยตรง (แก้ bug seeds=[])
+        self._score_map_snapshot = getattr(result, '_score_map', {})
+        self._ranked_snapshot    = getattr(result, '_ranked', [])
 
         return result
 
@@ -485,9 +486,14 @@ def _build_system_prompt(json_context: str, graph_summary: str) -> str:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - ยึดข้อมูลจาก _rank 1 เป็นหลัก
 - ห้ามมั่วตัวเลขหรือรหัสสินค้าเด็ดขาด
-- "เลี้ยวได้ไหม" → ดู Min_curve_radius_mm / Radius_min_mm
-  มีค่า = เลี้ยวได้ (บอก radius) / ไม่มีค่า = Straight Running เลี้ยวไม่ได้
+- "เลี้ยวได้ไหม" → ดู product_type ก่อนเสมอ (ห้ามดู radius อย่างเดียว)
+  product_type = "Straight Running Chain"  → เลี้ยวไม่ได้ ตอบทันทีโดยไม่ต้องดู radius
+  product_type = "Sideflexing Chain"       → เลี้ยวได้ แล้วค่อยบอก Min_curve_radius_mm
 - "workload" → ดู Max_Working_Load_N
+- "ใช้สเตอร์ตัวไหน" → ตอบแค่รหัสสเตอร์ที่ compatible จาก GraphRAG Context
+  ห้ามอธิบาย spec ยาว ตอบแค่ชื่อรุ่น + จำนวนฟัน (ถ้ามี) เท่านั้น
+- "สเตอร์นั้นผลิตยังไง" → ถ้า GraphRAG มีสเตอร์ compatible หลายตัว ต้องตอบให้ครบทุกตัว
+  ห้ามตอบแค่ตัวเดียวถ้า context มีมากกว่า 1
 - ถ้า final_score < 0.2 ทุกรุ่น → แจ้งว่าข้อมูลไม่เพียงพอ
 - ห้ามเรียก Tool เพื่อตอบ spec ที่อยู่ใน RAG Context แล้ว
 
@@ -512,13 +518,19 @@ def chat_interaction(
     chat_history: list,
     img_w: float,
     txt_w: float,
-    last_pid: str = "",
+    last_pids: list = None,
     session_id: str = "",
+    last_vit_signal = None,
+    last_graph_result = None,
 ):
     global _tool_call_log
 
+    if last_pids is None:
+        last_pids = []
+
     if not user_text.strip() and img_input is None:
-        return chat_history, chat_history, "⚠️ กรุณาพิมพ์ข้อความหรืออัปโหลดรูปภาพ", last_pid, session_id
+        return (chat_history, chat_history, "⚠️ กรุณาพิมพ์ข้อความหรืออัปโหลดรูปภาพ",
+                last_pids, session_id, last_vit_signal, last_graph_result)
 
     if not session_id:
         session_id = logger.new_session()
@@ -539,20 +551,31 @@ def chat_interaction(
     ai_reply      = ""
     error_msg     = None
 
-    # ── Effective text (carry-over last_pid) ────────────────
+    # ── Detect follow-up ────────────────────────────────────
+    # follow-up = ไม่มีรูปใหม่ + พิมพ์สั้น + มี context จาก turn ก่อน
+    is_followup = (
+        img_input is None and
+        user_text.strip() and
+        len(user_text.split()) <= 6 and
+        bool(last_pids or last_vit_signal or last_graph_result)
+    )
+
+    # ── Effective text — carry-over last_pids ───────────────
     effective_text = user_text or "ลูกค้าส่งรูปภาพมา"
-    if (last_pid and img_input is None and user_text.strip()
-            and len(user_text.split()) <= 4):
-        effective_text = f"{last_pid} {user_text}"
+    if is_followup and last_pids:
+        pid_prefix = " ".join(last_pids[:3])
+        effective_text = f"{pid_prefix} {user_text}"
 
     query_type = "image" if img_input is not None else "general"
+
+    raw_refs_html += f"**follow-up:** {is_followup} | **last_pids:** {last_pids}\n"
 
     # ── Start turn log ──────────────────────────────────────
     turn_log = logger.start_turn(
         session_id=session_id,
         user_text=user_text,
         has_image=img_input is not None,
-        last_pid=last_pid,
+        last_pid=" ".join(last_pids) if last_pids else "",
         effective_query=effective_text,
         query_type=query_type,
     )
@@ -562,6 +585,7 @@ def chat_interaction(
     try:
         # ════════════════════════════════════════════════════
         # PHASE 3: Retrieval
+        # carry-over vit_signal จาก turn ก่อนถ้าเป็น follow-up ไม่มีรูปใหม่
         # ════════════════════════════════════════════════════
         retrieval_result = retriever.search(
             query=effective_text,
@@ -569,8 +593,22 @@ def chat_interaction(
             query_type=query_type,
         )
 
-        # ── Debug sidebar ────────────────────────────────────
+        # ── carry-over vit_signal เมื่อไม่มีรูปใหม่ ─────────
         vit_sig = retriever._vit_signal
+        if is_followup and not vit_sig.series and last_vit_signal:
+            # ViT ไม่ได้รันเพราะไม่มีรูป ใช้ signal จาก turn ก่อนแทน
+            vit_sig = last_vit_signal
+            raw_refs_html += f"**ViT (carry-over):** series={vit_sig.series} conf={vit_sig.confidence:.3f}\n"
+
+        # ── carry-over graph_result เมื่อเป็น follow-up ─────
+        if is_followup and last_graph_result:
+            # inject graph ของ turn ก่อนเข้า retrieval result
+            # เพื่อให้ LLM เห็น compatible/process ของ turn ก่อนโดยไม่ต้อง traverse ใหม่
+            if not (retrieval_result.graph_result and
+                    retrieval_result.graph_result.seed_products):
+                retrieval_result.graph_result = last_graph_result
+                retrieval_result.graph_context = retriever.inner._graph_result_to_context(last_graph_result)
+                raw_refs_html += f"**Graph (carry-over):** seeds={last_graph_result.seed_products}\n"
         if vit_sig.series:
             raw_refs_html += (
                 f"**ViT series:** {vit_sig.series} "
@@ -633,19 +671,54 @@ def chat_interaction(
             return chat_history, chat_history, raw_refs_html, last_pid, session_id
 
         # ════════════════════════════════════════════════════
-        # PHASE 4: Rerank — ใช้ enriched query จาก v4
+        # PHASE 4: Rerank
+        # ถ้าส่งแค่รูปเปล่า (ไม่มี user_text) และ ViT dominant
+        # → skip CE เพราะ query "ลูกค้าส่งรูปภาพมา" ไม่มีความหมาย
+        #   CE จะ score สุ่ม ViT confidence 0.9+ น่าเชื่อกว่า
+        # → ใช้ rank จาก retriever โดยตรง (RRF score)
+        # ถ้ามี user_text → ใช้ CE ปกติ
         # ════════════════════════════════════════════════════
-        base_query = user_text or "ค้นหาจากรูปภาพ"
-        rerank_query = _retriever_inner.build_enriched_rerank_query(
-            base_query=base_query,
-            vit_signal=vit_sig if vit_sig.series else None,
-            graph_result=retrieval_result.graph_result,
-        )
+        image_only = (not user_text.strip()) and img_input is not None
 
-        reranked_result = reranker.rerank(
-            query=rerank_query,
-            retrieval_result=retrieval_result,
-        )
+        if image_only and vit_sig.dominant:
+            # skip CE — wrap retrieval_result เป็น RerankedResult ทันที
+            from reranker import RerankedResult, RerankedProduct
+            reranked_products = []
+            for p in retrieval_result.products[:reranker.cfg.final_top_k]:
+                reranked_products.append(RerankedProduct(
+                    product_id=p.product_id,
+                    final_score=p.rrf_score,
+                    cross_encoder_score=0.0,
+                    rrf_score=p.rrf_score,
+                    matched_chunks=p.matched_chunks,
+                    matched_images=getattr(p, 'matched_images', []),
+                    series=p.series,
+                    product_type=p.product_type,
+                    material=p.material,
+                    keyword_boost=p.keyword_boost,
+                    best_chunk_text=(p.matched_chunks[0].get("text", "") if p.matched_chunks else ""),
+                ))
+            reranked_result = RerankedResult(
+                products=reranked_products,
+                query_used="[ViT direct — image only]",
+                image_search_used=True,
+                vit_series_filter=vit_sig.series,
+                graph_context=retrieval_result.graph_context,
+                graph_result=retrieval_result.graph_result,
+                total_candidates=retrieval_result.total_candidates,
+            )
+            raw_refs_html += f"**Mode:** ViT direct (skip CE — image only, conf={vit_sig.confidence:.3f})\n"
+        else:
+            base_query = user_text or "ค้นหาจากรูปภาพ"
+            rerank_query = _retriever_inner.build_enriched_rerank_query(
+                base_query=base_query,
+                vit_signal=vit_sig if vit_sig.series else None,
+                graph_result=retrieval_result.graph_result,
+            )
+            reranked_result = reranker.rerank(
+                query=rerank_query,
+                retrieval_result=retrieval_result,
+            )
 
         logger.log_reranker(turn_log, reranked_result)
 
@@ -716,19 +789,42 @@ def chat_interaction(
         {"role": "assistant", "content": ai_reply},
     ]
 
-    # ── Extract last product id from reply ──────────────────
-    new_last_pid = ""
+    # ── Extract pids จาก reply + reranked products ──────────
+    # collect จาก 2 แหล่ง: ai_reply + reranked top products
+    new_last_pids = []
     try:
-        m = re.search(
+        # 1. จาก reranked products — ครบที่สุด
+        if "reranked_result" in dir() and reranked_result:
+            for p in reranked_result.products[:3]:
+                if p.product_id not in new_last_pids:
+                    new_last_pids.append(p.product_id)
+
+        # 2. จาก ai_reply — pid ที่ LLM พูดถึงจริงๆ (เพิ่มเข้าถ้ายังไม่มี)
+        for m in re.finditer(
             r'\b(LF\s*\d+\s*(?:TAB\s*)?[A-Z]?\d+|LFN\s*\d+\s*\w+|\d{5})\b',
             ai_reply, re.IGNORECASE
-        )
-        if m:
-            new_last_pid = m.group().strip()
+        ):
+            pid = m.group().strip()
+            if pid not in new_last_pids:
+                new_last_pids.append(pid)
+            if len(new_last_pids) >= 5:
+                break
     except Exception:
         pass
 
-    return chat_history, chat_history, raw_refs_html, new_last_pid, session_id
+    # ── carry-over vit_signal และ graph_result ──────────────
+    new_vit_signal    = vit_sig if vit_sig and vit_sig.series else last_vit_signal
+    new_graph_result  = None
+    try:
+        if retrieval_result.graph_result and retrieval_result.graph_result.seed_products:
+            new_graph_result = retrieval_result.graph_result
+        else:
+            new_graph_result = last_graph_result
+    except Exception:
+        new_graph_result = last_graph_result
+
+    return (chat_history, chat_history, raw_refs_html,
+            new_last_pids, session_id, new_vit_signal, new_graph_result)
 
 
 def _log_finish(turn_log, ai_reply: str, tool_calls: list, t_start: float, error=None):
@@ -762,9 +858,11 @@ function() {
 """
 
 with gr.Blocks(css=css, js=js_code, title="Movex Sales AI Assistant v4") as demo:
-    chat_state     = gr.State([])
-    last_pid_state = gr.State("")
-    session_state  = gr.State("")
+    chat_state          = gr.State([])
+    last_pids_state     = gr.State([])        # list of pids จาก turn ก่อน
+    session_state       = gr.State("")
+    last_vit_state      = gr.State(None)      # ViTSignal carry-over
+    last_graph_state    = gr.State(None)      # GraphResult carry-over
 
     gr.Markdown("<h1 style='text-align:center;'>🔗 Movex Sales AI Assistant v4</h1>")
     gr.Markdown(
@@ -807,22 +905,28 @@ with gr.Blocks(css=css, js=js_code, title="Movex Sales AI Assistant v4") as demo
     def reset_inputs():
         return None, ""
 
+    _inputs  = [txt_input, img_input_ui, chat_state, img_w, txt_w,
+                last_pids_state, session_state, last_vit_state, last_graph_state]
+    _outputs = [chatbot_ui, chat_state, raw_refs,
+                last_pids_state, session_state, last_vit_state, last_graph_state]
+
     submit_btn.click(
         fn=chat_interaction,
-        inputs=[txt_input, img_input_ui, chat_state, img_w, txt_w, last_pid_state, session_state],
-        outputs=[chatbot_ui, chat_state, raw_refs, last_pid_state, session_state],
+        inputs=_inputs,
+        outputs=_outputs,
     ).then(fn=reset_inputs, outputs=[img_input_ui, txt_input])
 
     txt_input.submit(
         fn=chat_interaction,
-        inputs=[txt_input, img_input_ui, chat_state, img_w, txt_w, last_pid_state, session_state],
-        outputs=[chatbot_ui, chat_state, raw_refs, last_pid_state, session_state],
+        inputs=_inputs,
+        outputs=_outputs,
     ).then(fn=reset_inputs, outputs=[img_input_ui, txt_input])
 
     clear_btn.click(
-        fn=lambda: ([], [], "", "", logger.new_session()),
+        fn=lambda: ([], [], "", [], "", None, None, logger.new_session()),
         inputs=None,
-        outputs=[chatbot_ui, chat_state, last_pid_state, raw_refs, session_state],
+        outputs=[chatbot_ui, chat_state, raw_refs,
+                 last_pids_state, session_state, last_vit_state, last_graph_state],
     )
 
 if __name__ == "__main__":
