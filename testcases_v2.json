@@ -1,0 +1,810 @@
+{
+  "version": "2.0",
+  "total": 25,
+  "single_turn": 19,
+  "multi_turn": 6,
+  "metrics_definition": {
+    "series_correct": "series ในคำตอบตรงกับ expected",
+    "product_type_correct": "Straight/Sideflexing ถูกต้อง",
+    "rejection_correct": "ปฏิเสธรูปที่ไม่ใช่สายพานได้",
+    "spec_value_correct": "ค่าตัวเลขใน must_contain ปรากฏในคำตอบ",
+    "unit_correct": "หน่วย (N, mm) ปรากฏในคำตอบ",
+    "curve_answer_correct": "ตอบเลี้ยวได้/ไม่ได้ถูกต้องตาม product_type",
+    "radius_value_correct": "ค่า radius (457) ปรากฏในคำตอบ",
+    "compatible_sprocket_correct": "sprocket ที่แนะนำ compatible กับ chain series",
+    "compatible_chain_correct": "chain ที่แนะนำ compatible กับ sprocket",
+    "all_items_listed": "แสดงครบทุกตัวใน expected_pids",
+    "reply_concise": "reply สั้นกว่า reply_max_length chars",
+    "process_correct": "กระบวนการผลิตถูกต้อง (Molded/Machined)",
+    "material_correct": "วัสดุถูกต้อง (LF/Polyamide/SS ฯลฯ)",
+    "clarification_triggered": "LLM ถามกลับแทนตอบทันที",
+    "off_topic_handled": "ไม่ตอบเรื่องนอก scope Movex",
+    "all_sprockets_answered": "ตอบ process ของทุก sprocket ไม่แค่ตัวเดียว",
+    "vit_carryover_works": "ระบบใช้ ViTSignal จาก turn ก่อนได้ถูกต้อง",
+    "graph_carryover_works": "ระบบใช้ GraphResult จาก turn ก่อนได้ถูกต้อง"
+  },
+  "testcases": [
+    {
+      "id": "IMG-001",
+      "category": "image",
+      "subcategory": "series_detection",
+      "turn_type": "single",
+      "description": "ส่งรูป LF820_K325 — ระบุ series 820 + Straight Running ได้",
+      "turns": [
+        {
+          "role": "user",
+          "text": "",
+          "image": "movex_LF820_K325_photo_top.jpeg"
+        }
+      ],
+      "eval": {
+        "must_contain": [
+          "820"
+        ],
+        "must_not_contain": [
+          "เลี้ยวได้",
+          "Sideflexing"
+        ],
+        "metrics": [
+          "series_correct",
+          "product_type_correct"
+        ]
+      }
+    },
+    {
+      "id": "IMG-002",
+      "category": "image",
+      "subcategory": "series_detection",
+      "turn_type": "single",
+      "description": "ส่งรูป LF880_TAB_K450 — ระบุ series 880 + Sideflexing ได้",
+      "turns": [
+        {
+          "role": "user",
+          "text": "",
+          "image": "movex_LF880_K450_photo_top.jpeg"
+        }
+      ],
+      "eval": {
+        "must_contain": [
+          "880"
+        ],
+        "must_not_contain": [
+          "Straight Running",
+          "วิ่งตรง"
+        ],
+        "metrics": [
+          "series_correct",
+          "product_type_correct"
+        ]
+      }
+    },
+    {
+      "id": "IMG-003",
+      "category": "image",
+      "subcategory": "rejection",
+      "turn_type": "single",
+      "description": "ส่งรูปที่ไม่ใช่สายพาน — ต้องปฏิเสธ",
+      "turns": [
+        {
+          "role": "user",
+          "text": "",
+          "image": "non_chain_object.jpg"
+        }
+      ],
+      "eval": {
+        "must_not_contain": [
+          "LF",
+          "820",
+          "880",
+          "K325"
+        ],
+        "metrics": [
+          "rejection_correct"
+        ]
+      }
+    },
+    {
+      "id": "SPEC-001",
+      "category": "spec",
+      "subcategory": "workload",
+      "turn_type": "single",
+      "description": "LF820_K325 workload = 1625 N",
+      "turns": [
+        {
+          "role": "user",
+          "text": "LF820 K325 workload เท่าไหร่",
+          "image": null
+        }
+      ],
+      "eval": {
+        "expected_product": "LF820_K325",
+        "expected_value": "1625",
+        "expected_unit": "N",
+        "must_contain": [
+          "1625"
+        ],
+        "metrics": [
+          "spec_value_correct",
+          "unit_correct"
+        ]
+      }
+    },
+    {
+      "id": "SPEC-002",
+      "category": "spec",
+      "subcategory": "width",
+      "turn_type": "single",
+      "description": "LF820_K325 width = 82.5 mm",
+      "turns": [
+        {
+          "role": "user",
+          "text": "LF820 K325 กว้างเท่าไหร่",
+          "image": null
+        }
+      ],
+      "eval": {
+        "expected_product": "LF820_K325",
+        "expected_value": "82.5",
+        "expected_unit": "mm",
+        "must_contain": [
+          "82.5"
+        ],
+        "metrics": [
+          "spec_value_correct",
+          "unit_correct"
+        ]
+      }
+    },
+    {
+      "id": "SPEC-003",
+      "category": "spec",
+      "subcategory": "workload",
+      "turn_type": "single",
+      "description": "LF880_TAB_K450 workload = 2200 N",
+      "turns": [
+        {
+          "role": "user",
+          "text": "LF880 TAB K450 workload เท่าไหร่",
+          "image": null
+        }
+      ],
+      "eval": {
+        "expected_product": "LF880_TAB_K450",
+        "expected_value": "2200",
+        "expected_unit": "N",
+        "must_contain": [
+          "2200"
+        ],
+        "metrics": [
+          "spec_value_correct",
+          "unit_correct"
+        ]
+      }
+    },
+    {
+      "id": "SPEC-004",
+      "category": "spec",
+      "subcategory": "width",
+      "turn_type": "single",
+      "description": "LF880_TAB_K450 width = 114.3 mm",
+      "turns": [
+        {
+          "role": "user",
+          "text": "LF880 TAB K450 กว้างเท่าไหร่",
+          "image": null
+        }
+      ],
+      "eval": {
+        "expected_product": "LF880_TAB_K450",
+        "expected_value": "114.3",
+        "expected_unit": "mm",
+        "must_contain": [
+          "114.3"
+        ],
+        "metrics": [
+          "spec_value_correct",
+          "unit_correct"
+        ]
+      }
+    },
+    {
+      "id": "SPEC-005",
+      "category": "spec",
+      "subcategory": "curve_straight",
+      "turn_type": "single",
+      "description": "LF820_K325 Straight Running — ต้องตอบว่าเลี้ยวไม่ได้",
+      "turns": [
+        {
+          "role": "user",
+          "text": "LF820 K325 เลี้ยวได้ไหม",
+          "image": null
+        }
+      ],
+      "eval": {
+        "expected_product": "LF820_K325",
+        "expected_answer": "เลี้ยวไม่ได้",
+        "must_contain_any": [
+          "ตรง",
+          "Straight",
+          "ไม่ได้",
+          "ไม่สามารถ"
+        ],
+        "must_not_contain": [
+          "457",
+          "radius",
+          "เลี้ยวได้ครับ"
+        ],
+        "metrics": [
+          "curve_answer_correct"
+        ]
+      }
+    },
+    {
+      "id": "SPEC-006",
+      "category": "spec",
+      "subcategory": "curve_sideflex",
+      "turn_type": "single",
+      "description": "LF880_TAB_K450 Sideflexing — ตอบว่าเลี้ยวได้ + radius 457mm",
+      "turns": [
+        {
+          "role": "user",
+          "text": "LF880 TAB K450 เลี้ยวได้ไหม",
+          "image": null
+        }
+      ],
+      "eval": {
+        "expected_product": "LF880_TAB_K450",
+        "expected_answer": "เลี้ยวได้",
+        "expected_radius": "457",
+        "must_contain": [
+          "457"
+        ],
+        "must_not_contain": [
+          "เลี้ยวไม่ได้",
+          "Straight Running"
+        ],
+        "metrics": [
+          "curve_answer_correct",
+          "radius_value_correct"
+        ]
+      }
+    },
+    {
+      "id": "SPEC-007",
+      "category": "spec",
+      "subcategory": "workload",
+      "turn_type": "single",
+      "description": "LF882_TAB_K750 workload = 3830 N",
+      "turns": [
+        {
+          "role": "user",
+          "text": "LF882 TAB K750 workload เท่าไหร่",
+          "image": null
+        }
+      ],
+      "eval": {
+        "expected_product": "LF882_TAB_K750",
+        "expected_value": "3830",
+        "expected_unit": "N",
+        "must_contain": [
+          "3830"
+        ],
+        "metrics": [
+          "spec_value_correct",
+          "unit_correct"
+        ]
+      }
+    },
+    {
+      "id": "GRAPH-001",
+      "category": "graph",
+      "subcategory": "compatible_chain",
+      "turn_type": "single",
+      "description": "54901 ใช้กับสายพานตัวไหน — ต้องตอบ LF880 series",
+      "turns": [
+        {
+          "role": "user",
+          "text": "54901 ใช้กับสายพานตัวไหน",
+          "image": null
+        }
+      ],
+      "eval": {
+        "expected_pids": [
+          "LF880_TAB_K325",
+          "LF880_TAB_K450"
+        ],
+        "must_contain": [
+          "880"
+        ],
+        "metrics": [
+          "compatible_chain_correct"
+        ]
+      }
+    },
+    {
+      "id": "GRAPH-002",
+      "category": "graph",
+      "subcategory": "compatible_sprocket_concise",
+      "turn_type": "single",
+      "description": "ส่งรูป 880 ถาม sprocket — ตอบสั้น แค่ชื่อรุ่น",
+      "turns": [
+        {
+          "role": "user",
+          "text": "ใช้สเตอร์ตัวไหน",
+          "image": "movex_LF880_K450_photo_top.jpeg"
+        }
+      ],
+      "eval": {
+        "expected_pids": [
+          "54901",
+          "55001"
+        ],
+        "must_contain": [
+          "54901",
+          "55001"
+        ],
+        "reply_max_length": 400,
+        "metrics": [
+          "compatible_sprocket_correct",
+          "all_items_listed",
+          "reply_concise"
+        ]
+      }
+    },
+    {
+      "id": "GRAPH-003",
+      "category": "graph",
+      "subcategory": "process_820_sprocket",
+      "turn_type": "single",
+      "description": "820 series sprocket ผลิตยังไง — process=Molded (Injection Molded)",
+      "turns": [
+        {
+          "role": "user",
+          "text": "54301 ผลิตยังไง",
+          "image": null
+        }
+      ],
+      "eval": {
+        "expected_process": "Molded",
+        "must_contain_any": [
+          "Injection",
+          "Molded",
+          "ฉีด",
+          "ขึ้นรูป"
+        ],
+        "metrics": [
+          "process_correct"
+        ]
+      }
+    },
+    {
+      "id": "GRAPH-004",
+      "category": "graph",
+      "subcategory": "process_103_sprocket",
+      "turn_type": "single",
+      "description": "103 series sprocket ผลิตยังไง — process=Machined",
+      "turns": [
+        {
+          "role": "user",
+          "text": "57801 ผลิตยังไง",
+          "image": null
+        }
+      ],
+      "eval": {
+        "expected_process": "Machined",
+        "must_contain_any": [
+          "Machined",
+          "Precision",
+          "กลึง",
+          "กัด"
+        ],
+        "metrics": [
+          "process_correct"
+        ]
+      }
+    },
+    {
+      "id": "GRAPH-005",
+      "category": "graph",
+      "subcategory": "material",
+      "turn_type": "single",
+      "description": "LF820_K325 วัสดุ LF — ต้องอธิบาย Low Friction Acetal",
+      "turns": [
+        {
+          "role": "user",
+          "text": "LF820 K325 ทำจากวัสดุอะไร",
+          "image": null
+        }
+      ],
+      "eval": {
+        "expected_material": "LF",
+        "must_contain_any": [
+          "Low Friction",
+          "Acetal",
+          "LF"
+        ],
+        "metrics": [
+          "material_correct"
+        ]
+      }
+    },
+    {
+      "id": "CLARIF-001",
+      "category": "clarification",
+      "subcategory": "broad_sideflex",
+      "turn_type": "single",
+      "description": "ถามกว้างๆ ว่ามีสายพานเลี้ยวได้ไหม — ต้องถามกลับ",
+      "turns": [
+        {
+          "role": "user",
+          "text": "มีสายพานที่เลี้ยวได้ไหม",
+          "image": null
+        }
+      ],
+      "eval": {
+        "must_ask_back": true,
+        "must_not_contain": [
+          "LF880",
+          "LF882",
+          "K325",
+          "K450"
+        ],
+        "metrics": [
+          "clarification_triggered"
+        ]
+      }
+    },
+    {
+      "id": "CLARIF-002",
+      "category": "clarification",
+      "subcategory": "off_topic",
+      "turn_type": "single",
+      "description": "ถามนอก scope — ต้องปฏิเสธสุภาพ",
+      "turns": [
+        {
+          "role": "user",
+          "text": "อากาศวันนี้เป็นยังไง",
+          "image": null
+        }
+      ],
+      "eval": {
+        "must_not_contain": [
+          "LF",
+          "820",
+          "ฝน",
+          "แดด"
+        ],
+        "metrics": [
+          "off_topic_handled"
+        ]
+      }
+    },
+    {
+      "id": "CLARIF-003",
+      "category": "clarification",
+      "subcategory": "ambiguous_no_series",
+      "turn_type": "single",
+      "description": "ถามอยากเปลี่ยนสายพาน ไม่บอก series — ต้องถามกลับ",
+      "turns": [
+        {
+          "role": "user",
+          "text": "อยากเปลี่ยนสายพาน",
+          "image": null
+        }
+      ],
+      "eval": {
+        "must_ask_back": true,
+        "metrics": [
+          "clarification_triggered"
+        ]
+      }
+    },
+    {
+      "id": "CLARIF-004",
+      "category": "clarification",
+      "subcategory": "ambiguous_ss",
+      "turn_type": "single",
+      "description": "ถาม SS มีอะไรบ้าง — SS เป็น material ไม่ใช่ series ต้องถามกลับ",
+      "turns": [
+        {
+          "role": "user",
+          "text": "สายพาน SS มีอะไรบ้าง",
+          "image": null
+        }
+      ],
+      "eval": {
+        "must_ask_back": true,
+        "metrics": [
+          "clarification_triggered"
+        ]
+      }
+    },
+    {
+      "id": "MT-001",
+      "category": "multi_turn",
+      "subcategory": "image_workload_width",
+      "turn_type": "multi",
+      "description": "ส่งรูป 820 → workload → width (carry-over test)",
+      "turns": [
+        {
+          "role": "user",
+          "text": "",
+          "image": "movex_LF820_K325_photo_top.jpeg"
+        },
+        {
+          "role": "user",
+          "text": "workload เท่าไหร่",
+          "image": null
+        },
+        {
+          "role": "user",
+          "text": "กว้างเท่าไหร่",
+          "image": null
+        }
+      ],
+      "eval_per_turn": [
+        {
+          "turn": 1,
+          "must_contain": [
+            "820"
+          ],
+          "metrics": [
+            "series_correct"
+          ]
+        },
+        {
+          "turn": 2,
+          "must_contain": [
+            "1625"
+          ],
+          "metrics": [
+            "spec_value_correct"
+          ]
+        },
+        {
+          "turn": 3,
+          "must_contain": [
+            "82.5"
+          ],
+          "metrics": [
+            "spec_value_correct"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MT-002",
+      "category": "multi_turn",
+      "subcategory": "image_curve_straight",
+      "turn_type": "multi",
+      "description": "ส่งรูป 820 Straight → เลี้ยวได้ไหม — ห้ามตอบว่าเลี้ยวได้ (bug ที่เจอใน v3)",
+      "turns": [
+        {
+          "role": "user",
+          "text": "",
+          "image": "movex_LF820_K325_photo_top.jpeg"
+        },
+        {
+          "role": "user",
+          "text": "เลี้ยวได้ไหม",
+          "image": null
+        }
+      ],
+      "eval_per_turn": [
+        {
+          "turn": 1,
+          "must_contain": [
+            "820"
+          ],
+          "metrics": [
+            "series_correct"
+          ]
+        },
+        {
+          "turn": 2,
+          "must_contain_any": [
+            "ตรง",
+            "Straight",
+            "ไม่ได้",
+            "ไม่สามารถ"
+          ],
+          "must_not_contain": [
+            "เลี้ยวได้ครับ",
+            "457"
+          ],
+          "metrics": [
+            "curve_answer_correct"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MT-003",
+      "category": "multi_turn",
+      "subcategory": "image_sprocket_process_both",
+      "turn_type": "multi",
+      "description": "ส่งรูป 880 → ถาม sprocket → ถาม process ต้องตอบทั้ง 54901 และ 55001",
+      "turns": [
+        {
+          "role": "user",
+          "text": "ใช้สเตอร์ตัวไหน",
+          "image": "movex_LF880_K450_photo_top.jpeg"
+        },
+        {
+          "role": "user",
+          "text": "สเตอร์นั้นผลิตยังไง",
+          "image": null
+        }
+      ],
+      "eval_per_turn": [
+        {
+          "turn": 1,
+          "must_contain": [
+            "54901",
+            "55001"
+          ],
+          "metrics": [
+            "compatible_sprocket_correct",
+            "all_items_listed"
+          ]
+        },
+        {
+          "turn": 2,
+          "must_contain": [
+            "54901",
+            "55001"
+          ],
+          "must_contain_any": [
+            "Injection",
+            "Molded",
+            "ฉีด"
+          ],
+          "description": "ต้องตอบ process ทั้ง 2 ตัว ไม่ใช่แค่ตัวเดียว",
+          "metrics": [
+            "all_sprockets_answered",
+            "process_correct"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MT-004",
+      "category": "multi_turn",
+      "subcategory": "text_drilldown",
+      "turn_type": "multi",
+      "description": "พิมพ์รุ่นตรงๆ แล้ว drill-down",
+      "turns": [
+        {
+          "role": "user",
+          "text": "LF820 K325 workload เท่าไหร่",
+          "image": null
+        },
+        {
+          "role": "user",
+          "text": "กว้างเท่าไหร่",
+          "image": null
+        },
+        {
+          "role": "user",
+          "text": "เลี้ยวได้ไหม",
+          "image": null
+        }
+      ],
+      "eval_per_turn": [
+        {
+          "turn": 1,
+          "must_contain": [
+            "1625"
+          ],
+          "metrics": [
+            "spec_value_correct"
+          ]
+        },
+        {
+          "turn": 2,
+          "must_contain": [
+            "82.5"
+          ],
+          "metrics": [
+            "spec_value_correct"
+          ]
+        },
+        {
+          "turn": 3,
+          "must_contain_any": [
+            "ตรง",
+            "Straight",
+            "ไม่ได้"
+          ],
+          "metrics": [
+            "curve_answer_correct"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MT-005",
+      "category": "multi_turn",
+      "subcategory": "vit_carryover",
+      "turn_type": "multi",
+      "description": "รูปเปล่า turn1 ตอบแค่ series → turn2 ถาม workload ต้องได้ค่าจริง (ViT carry-over)",
+      "turns": [
+        {
+          "role": "user",
+          "text": "",
+          "image": "movex_LF820_K325_photo_top.jpeg"
+        },
+        {
+          "role": "user",
+          "text": "workload เท่าไหร่",
+          "image": null
+        }
+      ],
+      "eval_per_turn": [
+        {
+          "turn": 1,
+          "must_contain": [
+            "820"
+          ],
+          "metrics": [
+            "series_correct"
+          ]
+        },
+        {
+          "turn": 2,
+          "must_contain": [
+            "1625"
+          ],
+          "description": "ต้องได้ workload ถูกต้อง แม้ turn1 ตอบแค่ series",
+          "metrics": [
+            "spec_value_correct",
+            "vit_carryover_works"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MT-006",
+      "category": "multi_turn",
+      "subcategory": "graph_carryover",
+      "turn_type": "multi",
+      "description": "ถาม sprocket จาก text → ถาม process ต่อ (graph carry-over)",
+      "turns": [
+        {
+          "role": "user",
+          "text": "54901 ใช้กับสายพานตัวไหน",
+          "image": null
+        },
+        {
+          "role": "user",
+          "text": "สเตอร์นั้นผลิตจากวัสดุอะไร",
+          "image": null
+        }
+      ],
+      "eval_per_turn": [
+        {
+          "turn": 1,
+          "must_contain": [
+            "880"
+          ],
+          "metrics": [
+            "compatible_chain_correct"
+          ]
+        },
+        {
+          "turn": 2,
+          "must_contain_any": [
+            "Polyamide",
+            "Nylon",
+            "PA"
+          ],
+          "description": "วัสดุ sprocket 54901 = Polyamide",
+          "metrics": [
+            "material_correct",
+            "graph_carryover_works"
+          ]
+        }
+      ]
+    }
+  ]
+}
