@@ -678,9 +678,9 @@ def chat_interaction(
         # → ใช้ rank จาก retriever โดยตรง (RRF score)
         # ถ้ามี user_text → ใช้ CE ปกติ
         # ════════════════════════════════════════════════════
-        image_only = (not user_text.strip()) and img_input is not None
+        skip_ce = img_input is not None and vit_sig.dominant
 
-        if image_only and vit_sig.dominant:
+        if skip_ce and vit_sig.dominant:
             # skip CE — wrap retrieval_result เป็น RerankedResult ทันที
             from reranker import RerankedResult, RerankedProduct
             reranked_products = []

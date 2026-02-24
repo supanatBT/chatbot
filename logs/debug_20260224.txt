@@ -1,0 +1,228 @@
+══════════════════════════════════════════════════════════════════════
+TURN  sess_180419_799206_t001  [2026-02-24T18:04:19.624]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : อันนี้กว้างเท่าไหร่
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : อันนี้กว้างเท่าไหร่
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9626  series=820  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=8
+  Top-5 after RRF:
+    movex_chain_LF820_K325                    rrf=0.02066  kw=0.0  txt=[5, 8, 10, 17]  vit=0  sig=0  grph=-1.0
+    movex_chain_LF820_K750                    rrf=0.00440  kw=0.0  txt=[9, 14, 16, 19]  vit=None  sig=1  grph=-1.0
+    movex_chain_LF820_K450                    rrf=0.00359  kw=0.0  txt=[0, 1, 4, 11]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K600                    rrf=0.00346  kw=0.0  txt=[2, 3, 6, 15]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K400                    rrf=0.00317  kw=0.0  txt=[7, 12, 13, 18]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54201                      final=0.7157  CE=6.87  RRF=0.0011  kw=0.0
+  [2] movex_sprocket_54401                      final=0.6959  CE=6.85  RRF=0.0000  kw=0.0
+  [3] movex_sprocket_54301                      final=0.6909  CE=6.82  RRF=0.0000  kw=0.0
+  [4] movex_chain_LF820_K325                    final=0.4005  CE=3.01  RRF=0.0207  kw=0.0
+  [5] movex_chain_LF820_K400                    final=0.1210  CE=2.85  RRF=0.0032  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=7352.4ms
+  reply_preview: จากรูปภาพที่แนบมา สินค้ารุ่นนี้คือ Movex LF 820 K400 ครับ ซึ่งมีความกว้างของแผ่น (Plate Width) อยู่ที่ **101.6 มม.** ครั
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_180419_799206_t002  [2026-02-24T18:04:45.960]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : แล้วworkload เท่าไรห่
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : movex_sprocket_54201 movex_sprocket_54401 movex_sprocket_54301 แล้วworkload เท่า
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=none  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=6
+  Top-5 after RRF:
+    movex_sprocket_55601                      rrf=0.01556  kw=0.0  txt=[0, 3, 4, 10]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_55001                      rrf=0.01504  kw=0.0  txt=[1, 6, 8, 11]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_54901                      rrf=0.01439  kw=0.0  txt=[2, 9, 12, 15]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_54301                      rrf=0.01395  kw=0.0  txt=[5, 13, 17]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_54401                      rrf=0.01351  kw=0.0  txt=[7, 16, 19]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54301                      final=0.7843  CE=7.01  RRF=0.0140  kw=0.0
+  [2] movex_sprocket_54401                      final=0.7343  CE=7.02  RRF=0.0135  kw=0.0
+  [3] movex_sprocket_54201                      final=0.7000  CE=7.06  RRF=0.0132  kw=0.0
+  [4] movex_sprocket_54901                      final=0.6665  CE=6.33  RRF=0.0144  kw=0.0
+  [5] movex_sprocket_55001                      final=0.5093  CE=5.39  RRF=0.0150  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=4543.5ms
+  reply_preview: ขออภัยครับ ในข้อมูลที่ผมมีอยู่ตอนนี้ยังไม่พบรายละเอียดเกี่ยวกับ Workload (Max_Working_Load_N) ของสายพานรุ่น LF 820 K400 
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_214748_9d3775_t001  [2026-02-24T21:47:48.139]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : อันนี้กว้างเท่าไหร่
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : อันนี้กว้างเท่าไหร่
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.966  series=820  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=8
+  Top-5 after RRF:
+    movex_chain_LF820_K325                    rrf=0.02068  kw=0.0  txt=[5, 8, 10, 17]  vit=0  sig=0  grph=-1.0
+    movex_chain_LF820_K750                    rrf=0.00436  kw=0.0  txt=[9, 14, 16, 19]  vit=None  sig=1  grph=-1.0
+    movex_chain_LF820_K450                    rrf=0.00355  kw=0.0  txt=[0, 1, 4, 11]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K600                    rrf=0.00342  kw=0.0  txt=[2, 3, 6, 15]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K400                    rrf=0.00313  kw=0.0  txt=[7, 12, 13, 18]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_chain_LF820_K325                    final=0.0207  CE=0.00  RRF=0.0207  kw=0.0
+  [2] movex_chain_LF820_K750                    final=0.0044  CE=0.00  RRF=0.0044  kw=0.0
+  [3] movex_chain_LF820_K450                    final=0.0036  CE=0.00  RRF=0.0036  kw=0.0
+  [4] movex_chain_LF820_K600                    final=0.0034  CE=0.00  RRF=0.0034  kw=0.0
+  [5] movex_chain_LF820_K400                    final=0.0031  CE=0.00  RRF=0.0031  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=4859.6ms
+  reply_preview: จากภาพที่ท่านส่งมา เป็นสายพานลำเลียงรุ่น Movex LF 820 K325 ครับ
+
+สายพานรุ่นนี้มีความกว้างหน้าแผ่นอยู่ที่ 82.5 มม. (หรือ 
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_214748_9d3775_t002  [2026-02-24T21:48:09.454]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : แล้วworkload เท่าไรห่
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : movex_chain_LF820_K325 movex_chain_LF820_K750 movex_chain_LF820_K450 แล้วworkloa
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=none  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=6
+  Top-5 after RRF:
+    movex_chain_LF820_K750                    rrf=0.01556  kw=0.0  txt=[0, 3, 6, 8]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K400                    rrf=0.01476  kw=0.0  txt=[1, 7, 11, 12]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K450                    rrf=0.01434  kw=0.0  txt=[2, 9, 13, 15]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K600                    rrf=0.01409  kw=0.0  txt=[4, 10, 14, 16]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K325                    rrf=0.01399  kw=0.0  txt=[5, 18]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_chain_LF820_K400                    final=0.9121  CE=3.01  RRF=0.0148  kw=0.0
+  [2] movex_chain_LF820_K325                    final=0.7566  CE=2.92  RRF=0.0140  kw=0.0
+  [3] movex_chain_LF820_K600                    final=0.4917  CE=2.56  RRF=0.0141  kw=0.0
+  [4] movex_chain_LF820_K750                    final=0.4295  CE=2.27  RRF=0.0156  kw=0.0
+  [5] movex_chain_LF820_K450                    final=0.3881  CE=2.39  RRF=0.0143  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=2511.9ms
+  reply_preview: สำหรับ Movex LF 820 K325 รุ่นนี้ มีค่า Max Working Load (รับน้ำหนักสูงสุด) อยู่ที่ 1625 N ครับ
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
