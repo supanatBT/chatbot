@@ -1,4 +1,5 @@
 """
+fix ce and vit signal
 chatbot_v4.py
 =============
 Movex Sales AI Assistant v4 — Adaptive Multi-Signal Pipeline
@@ -72,7 +73,8 @@ print("⏳ โหลด Jina v3...")
 jina_tokenizer = AutoTokenizer.from_pretrained(JINA_MODEL_ID, trust_remote_code=True)
 jina_model = AutoModel.from_pretrained(
     JINA_MODEL_ID, trust_remote_code=True,
-    dtype=torch.float32, attn_implementation="eager"
+    torch_dtype=torch.float32,
+    attn_implementation="eager"
 ).to(DEVICE)
 jina_model.eval()
 print("✅ Jina v3")
@@ -441,11 +443,21 @@ tracked_filter  = _tracked(filter_product_specs)
 # SYSTEM PROMPT
 # ================================================================
 
-def _build_system_prompt(json_context: str, graph_summary: str) -> str:
+def _build_system_prompt(json_context: str, graph_summary: str,vit_signal=None) -> str:
+    vit_context = ""
+    if vit_signal and vit_signal.series:
+        vit_context = f"""
+    [ViT Signal — ผลการวิเคราะห์รูปภาพ]
+    series     : {vit_signal.series}
+    confidence : {vit_signal.confidence:.3f}
+    dominant   : {"✅ มั่นใจสูง (≥0.85)" if vit_signal.dominant else "⚠️ ปานกลาง (0.50–0.85)"}
+    top_pid    : {vit_signal.top_pid or "-"}
+    """
     return f"""
 คุณคือ 'Movex Assistant' วิศวกรฝ่ายขายมืออาชีพของบริษัท Movex
 ตอบภาษาไทย เป็นธรรมชาติ มีหางเสียง (ครับ/ค่ะ)
 
+{vit_context}
 [RAG Context — สินค้าที่ระบบค้นหามาได้ เรียงตาม final_score สูงสุด]
 {json_context}
 
@@ -457,18 +469,38 @@ def _build_system_prompt(json_context: str, graph_summary: str) -> str:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ก่อนตอบทุกครั้ง ให้ถามตัวเองว่า "ลูกค้าระบุรุ่นสินค้าชัดเจนแล้วหรือยัง?"
 
-✅ ระบุชัด = มีอย่างน้อย 1 ข้อต่อไปนี้:
+✅ ระบุชัด → ตอบ spec ได้เลย ถ้ามีอย่างน้อย 1 ข้อต่อไปนี้:
   • รหัสรุ่น / Ref ชัดเจน เช่น "LF820 K325", "54901"
   • series + ความกว้าง เช่น "880 กว้าง 82.5"
-  • รูปภาพของสินค้าชัดเจน (ระบบ ViT detect series ได้)
+  • รูปภาพที่ ViT confidence ≥ 0.90 และ dominant=✅
+    → ดู product_type ของ rank 1 ใน RAG Context แล้วแยกการตอบ:
 
-❌ ยังไม่ระบุ = ถามแบบนี้เท่านั้น:
-  • "มีสายพานเลี้ยวได้ไหม"   ← ไม่มี series ไม่มี width
-  • "แนะนำสายพานหน่อย"       ← ไม่มีข้อมูลใดเลย
-  • "สายพาน SS มีอะไรบ้าง"   ← ไม่ระบุ type/width
-  • "อยากเปลี่ยนสายพาน"      ← ไม่รู้รุ่นเดิม
+    ถ้า product_type = "Chain":
+      → ตอบ spec ของ rank 1 ได้เลย
+      → ท้ายคำตอบเสนอ width อื่นใน series เดียวกัน
+         พร้อมบอกว่าแต่ละ width เหมาะกับสินค้าประเภทใด
 
-ถ้า ❌ → ต้องถามกลับก่อนเสมอ ห้ามดู spec ห้ามตอบรุ่นใดรุ่นหนึ่ง
+    ถ้า product_type = "Sprocket" หรือ "Sideflexing Sprocket" หรือ "Heavy-Duty Sprocket":
+      → ตอบ spec ของ rank 1 ได้เลย (Z-teeth, Bore, PD, OD, compatible chain)
+      → ไม่ต้องถาม Z-teeth หรือ Bore เพิ่ม เพราะ retrieval ระบุรุ่นชัดแล้ว
+      → ท้ายคำตอบบอก compatible chain จาก GraphRAG Context
+
+⚠️ รู้ series แต่ยังไม่รู้ width = ถามแบบนี้:
+  • รูปภาพ Chain ที่ ViT confidence ≥ 0.50 แต่ < 0.90
+    → บอก series ที่ detect ได้ก่อน
+    → ถามเฉพาะ width + การใช้งาน
+    → เสนอตัวเลือก width ทั้งหมดใน series นั้น
+       พร้อมบอกว่าแต่ละ width เหมาะกับสินค้าประเภทใด
+    ตัวอย่าง:
+      "จากรูปเป็น 880 Series Sideflexing ครับ มี width ให้เลือก:
+       • 82.5 mm — ขวด PET / กระป๋อง single file
+       • 114.3 mm — ขวดแก้ว / กล่องที่ต้องการความเสถียรมากขึ้น
+       ต้องการ width ไหนครับ?"
+
+❌ ยังไม่ระบุ → ถามกลับก่อนเสมอ ห้ามดู spec ห้ามตอบรุ่นใดรุ่นหนึ่ง:
+  • ไม่มี series ไม่มี width เช่น "มีสายพานเลี้ยวได้ไหม", "แนะนำสายพานหน่อย"
+  • รูปภาพที่ ViT confidence < 0.50
+  • รูปภาพที่ top-1 กับ top-2 rank gap < 0.003
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔴 ขั้นตอนที่ 2: วิธีถามกลับ (Clarification)
@@ -484,7 +516,7 @@ def _build_system_prompt(json_context: str, graph_summary: str) -> str:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🟢 ขั้นตอนที่ 3: ตอบ spec (เฉพาะเมื่อระบุรุ่นชัดแล้ว)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- ยึดข้อมูลจาก _rank 1 เป็นหลัก
+- ยึดข้อมูลจาก rank 1 เป็นหลัก
 - ห้ามมั่วตัวเลขหรือรหัสสินค้าเด็ดขาด
 - "เลี้ยวได้ไหม" → ดู product_type ก่อนเสมอ (ห้ามดู radius อย่างเดียว)
   product_type = "Straight Running Chain"  → เลี้ยวไม่ได้ ตอบทันทีโดยไม่ต้องดู radius
@@ -516,8 +548,6 @@ def chat_interaction(
     user_text: str,
     img_input,
     chat_history: list,
-    img_w: float,
-    txt_w: float,
     last_pids: list = None,
     session_id: str = "",
     last_vit_signal = None,
@@ -599,7 +629,7 @@ def chat_interaction(
             # ViT ไม่ได้รันเพราะไม่มีรูป ใช้ signal จาก turn ก่อนแทน
             vit_sig = last_vit_signal
             raw_refs_html += f"**ViT (carry-over):** series={vit_sig.series} conf={vit_sig.confidence:.3f}\n"
-
+            retrieval_result.vit_signal = vit_sig
         # ── carry-over graph_result เมื่อเป็น follow-up ─────
         if is_followup and last_graph_result:
             # inject graph ของ turn ก่อนเข้า retrieval result
@@ -671,54 +701,19 @@ def chat_interaction(
             return chat_history, chat_history, raw_refs_html, last_pid, session_id
 
         # ════════════════════════════════════════════════════
-        # PHASE 4: Rerank
-        # ถ้าส่งแค่รูปเปล่า (ไม่มี user_text) และ ViT dominant
-        # → skip CE เพราะ query "ลูกค้าส่งรูปภาพมา" ไม่มีความหมาย
-        #   CE จะ score สุ่ม ViT confidence 0.9+ น่าเชื่อกว่า
-        # → ใช้ rank จาก retriever โดยตรง (RRF score)
-        # ถ้ามี user_text → ใช้ CE ปกติ
+        # PHASE 4: Rerank skip use rerank.py
         # ════════════════════════════════════════════════════
-        skip_ce = img_input is not None and vit_sig.dominant
-
-        if skip_ce and vit_sig.dominant:
-            # skip CE — wrap retrieval_result เป็น RerankedResult ทันที
-            from reranker import RerankedResult, RerankedProduct
-            reranked_products = []
-            for p in retrieval_result.products[:reranker.cfg.final_top_k]:
-                reranked_products.append(RerankedProduct(
-                    product_id=p.product_id,
-                    final_score=p.rrf_score,
-                    cross_encoder_score=0.0,
-                    rrf_score=p.rrf_score,
-                    matched_chunks=p.matched_chunks,
-                    matched_images=getattr(p, 'matched_images', []),
-                    series=p.series,
-                    product_type=p.product_type,
-                    material=p.material,
-                    keyword_boost=p.keyword_boost,
-                    best_chunk_text=(p.matched_chunks[0].get("text", "") if p.matched_chunks else ""),
-                ))
-            reranked_result = RerankedResult(
-                products=reranked_products,
-                query_used="[ViT direct — image only]",
-                image_search_used=True,
-                vit_series_filter=vit_sig.series,
-                graph_context=retrieval_result.graph_context,
-                graph_result=retrieval_result.graph_result,
-                total_candidates=retrieval_result.total_candidates,
-            )
-            raw_refs_html += f"**Mode:** ViT direct (skip CE — image only, conf={vit_sig.confidence:.3f})\n"
-        else:
-            base_query = user_text or "ค้นหาจากรูปภาพ"
-            rerank_query = _retriever_inner.build_enriched_rerank_query(
-                base_query=base_query,
-                vit_signal=vit_sig if vit_sig.series else None,
-                graph_result=retrieval_result.graph_result,
-            )
-            reranked_result = reranker.rerank(
-                query=rerank_query,
-                retrieval_result=retrieval_result,
-            )
+    
+        base_query = user_text or "ค้นหาจากรูปภาพ"
+        rerank_query = _retriever_inner.build_enriched_rerank_query(
+            base_query=base_query,
+            vit_signal=vit_sig if vit_sig.series else None,
+            graph_result=retrieval_result.graph_result,
+        )
+        reranked_result = reranker.rerank(
+            query=rerank_query,
+            retrieval_result=retrieval_result,
+        )
 
         logger.log_reranker(turn_log, reranked_result)
 
@@ -748,7 +743,7 @@ def chat_interaction(
         # ════════════════════════════════════════════════════
         json_context  = json.dumps(llm_context, ensure_ascii=False, indent=2)
         graph_summary = _build_graph_summary(retrieval_result.graph_result)
-        system_instruction = _build_system_prompt(json_context, graph_summary)
+        system_instruction = _build_system_prompt(json_context, graph_summary, vit_signal=vit_sig)
 
         gemini_history = []
         for msg in chat_history:
@@ -891,9 +886,6 @@ with gr.Blocks(css=css, js=js_code, title="Movex Sales AI Assistant v4") as demo
         clear_btn = gr.Button("🗑️ ล้างประวัติ", variant="secondary", size="sm")
 
     with gr.Accordion("🔍 ข้อมูลอ้างอิง + Log Info", open=False):
-        with gr.Row():
-            img_w = gr.Slider(0, 1, value=0.6, step=0.1, label="ความสำคัญรูปภาพ")
-            txt_w = gr.Slider(0, 1, value=0.4, step=0.1, label="ความสำคัญข้อความ")
         raw_refs = gr.Markdown()
         gr.Markdown(
             f"📋 **Log files (rotate รายวัน):**\n"
@@ -905,7 +897,7 @@ with gr.Blocks(css=css, js=js_code, title="Movex Sales AI Assistant v4") as demo
     def reset_inputs():
         return None, ""
 
-    _inputs  = [txt_input, img_input_ui, chat_state, img_w, txt_w,
+    _inputs  = [txt_input, img_input_ui, chat_state,
                 last_pids_state, session_state, last_vit_state, last_graph_state]
     _outputs = [chatbot_ui, chat_state, raw_refs,
                 last_pids_state, session_state, last_vit_state, last_graph_state]

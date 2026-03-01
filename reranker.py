@@ -65,7 +65,7 @@ class RerankedResult:
 
 @dataclass
 class RerankerConfig:
-    model_name:           str   = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    model_name:           str   = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
     rerank_top_k:         int   = 10
     final_top_k:          int   = 5
     max_length:           int   = 512
@@ -103,10 +103,6 @@ class Reranker:
     # -----------------------------------------------------------
 
     def rerank(self, query: str, retrieval_result) -> RerankedResult:
-        """
-        รับ query + retrieval_result (RetrievalResultV4 หรืออะไรก็ได้ที่มี .products)
-        คืน RerankedResult
-        """
         candidates = retrieval_result.products[:self.cfg.rerank_top_k]
 
         if not candidates:
@@ -119,7 +115,15 @@ class Reranker:
                 graph_result=getattr(retrieval_result, 'graph_result', None),
                 total_candidates=0,
             )
-
+        # ── 0. ตรวจว่าควร skip CE ไหม ──────────────────────── ← เพิ่มใหม่
+        vit_signal = getattr(retrieval_result, 'vit_signal', None)
+        image_used = getattr(retrieval_result, 'image_search_used', False)
+        skip_ce = (
+            image_used and
+            vit_signal is not None and
+            vit_signal.confidence >= 0.50
+        )
+        self._last_skip_ce = skip_ce
         # ── 1. Score แต่ละ product ด้วย cross-encoder ─────────
         best_scores = {}
 
@@ -128,12 +132,15 @@ class Reranker:
             if not chunks:
                 chunks = [{"text": product.product_id, "type": "id"}]
 
-            chunk_scores = self._score_chunks(query, chunks)
-            best_idx = max(range(len(chunk_scores)), key=lambda i: chunk_scores[i])
-            best_scores[p_idx] = (
-                chunk_scores[best_idx],
-                chunks[best_idx].get("text", ""),
-            )
+            if skip_ce:                                          # ← เพิ่มใหม่
+                best_scores[p_idx] = (0.0, chunks[0].get("text", ""))
+            else:
+                chunk_scores = self._score_chunks(query, chunks)
+                best_idx = max(range(len(chunk_scores)), key=lambda i: chunk_scores[i])
+                best_scores[p_idx] = (
+                    chunk_scores[best_idx],
+                    chunks[best_idx].get("text", ""),
+                )
 
         # ── 2. Normalize ───────────────────────────────────────
         raw_ce  = [best_scores[i][0] for i in range(len(candidates))]
@@ -145,10 +152,13 @@ class Reranker:
         # ── 3. Combine + Keyword Bonus ─────────────────────────
         final_scores = []
         for i, product in enumerate(candidates):
-            score = (
-                self.cfg.weight_cross_encoder * norm_ce[i]
-                + self.cfg.weight_rrf * norm_rrf[i]
-            )
+            if skip_ce:                                          # ← เพิ่มใหม่
+                score = norm_rrf[i]
+            else:
+                score = (
+                    self.cfg.weight_cross_encoder * norm_ce[i]
+                    + self.cfg.weight_rrf * norm_rrf[i]
+                )
             if getattr(product, 'keyword_boost', 0.0) > 0:
                 score += self.cfg.keyword_boost_bonus
             final_scores.append(score)
@@ -182,7 +192,6 @@ class Reranker:
             graph_result=getattr(retrieval_result, 'graph_result', None),
             total_candidates=len(candidates),
         )
-
     # -----------------------------------------------------------
     # CROSS-ENCODER SCORING
     # -----------------------------------------------------------

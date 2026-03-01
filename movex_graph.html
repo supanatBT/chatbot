@@ -1,0 +1,349 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LF820_K325", "label": "movex_chain_LF820_K325", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LF820_K325\nRef: LF 820 K325\nseries: 820 Series\nproduct_type: Straight Running Chain\nusage: Suitable for single-line conveying of small footprint items such as PET bottles (330\u2013600ml), aluminum cans, and glass jars. Ideal for low- to medium-speed filling lines.\nkey_features: Standard 82.5mm width compatible with most industry-standard conveyor tracks. Balanced design for low- to medium-speed stability.\nconstraints: Not recommended for unstable tall products without side guides. Single track application.\nPlate_Width_mm: 82.5\nMax_Working_Load_N: 1625\nWeight_kg_m: 0.89\nMaterial: LF\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LF820_K400", "label": "movex_chain_LF820_K400", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LF820_K400\nRef: LF 820 K400\nseries: 820 Series\nproduct_type: Straight Running Chain\nusage: Designed for medium-sized containers like 1.0L - 1.5L bottles, milk cartons (Tetra Pak), and aerosol cans requiring extra stability.\nkey_features: Provides 23% more surface area than K325, reducing tipping risk for taller containers.\nconstraints: Requires compatible 100mm+ guide rail spacing. Straight running only.\nPlate_Width_mm: 101.6\nMax_Working_Load_N: 1625\nWeight_kg_m: 0.95\nMaterial: LF\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LF820_K450", "label": "movex_chain_LF820_K450", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LF820_K450\nRef: LF 820 K450\nseries: 820 Series\nproduct_type: Straight Running Chain\nusage: Optimized for large containers such as 2L soft drink bottles, 5-gallon jugs, or glass jars with wide bases. Also used for small multi-packs.\nkey_features: Wide 114.3mm plate offers superior support for heavy or wide-base products. Often used in parallel for wide belt replacements.\nconstraints: Higher friction contact area; consider lubrication for high loads.\nPlate_Width_mm: 114.3\nMax_Working_Load_N: 1625\nWeight_kg_m: 1.0\nMaterial: LF\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LF820_K600", "label": "movex_chain_LF820_K600", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LF820_K600\nRef: LF 820 K600\nseries: 820 Series\nproduct_type: Straight Running Chain\nusage: Heavy-duty application for secondary packaging like cardboard boxes, shrink-wrapped 6-packs, and plastic trays.\nkey_features: Extra-wide 152.4mm surface prevents product overhang and ensures smooth transfer of non-cylindrical items.\nconstraints: Requires multiple wear strips for underside support due to width.\nPlate_Width_mm: 152.4\nMax_Working_Load_N: 1625\nWeight_kg_m: 1.22\nMaterial: LF\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LF820_K750", "label": "movex_chain_LF820_K750", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LF820_K750\nRef: LF 820 K750\nseries: 820 Series\nproduct_type: Straight Running Chain\nusage: Specialized for bulk handling of large plastic crates, kegs, and industrial parts. Commonly used in accumulation tables (mass flow).\nkey_features: Maximum width of 190.5mm in this series. High load distribution capability for heavy bulk items.\nconstraints: High turning moment; strict straight-line alignment required to prevent jamming.\nPlate_Width_mm: 190.5\nMax_Working_Load_N: 1625\nWeight_kg_m: 1.43\nMaterial: LF\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LF821_K750", "label": "movex_chain_LF821_K750", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LF821_K750\nRef: LF 821 K750\nseries: 821 Series\nproduct_type: Straight Running Chain\nusage: Heavy-duty straight conveying for high-load industrial applications. Specifically designed for medium-to-large footprints like plastic crates, beverage kegs, and automotive components where the standard 820 series reaches its tension limit.\nkey_features: Reinforced double-hinge construction for maximum tensile strength (up to 2,770 N); features a 4.8 mm thicker plate for superior impact resistance and stability in demanding production environments.\nconstraints: Requires more robust drive motors due to higher weight per meter (2.55 kg/m). Strictly for straight-line layouts. Minimum backflex radius of 50 mm.\nPlate_Width_mm: 190.5\nMax_Working_Load_N: 2770\nWeight_kg_m: 2.55\nMaterial: LF\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LF821_K1000", "label": "movex_chain_LF821_K1000", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LF821_K1000\nRef: LF 821 K1000\nseries: 821 Series\nproduct_type: Straight Running Chain\nusage: High-capacity straight conveying for wide and heavy items. Ideal for large automotive assemblies, bulk chemical containers, and high-volume accumulation tables requiring a stable, wide-surface deck.\nkey_features: Wide 254 mm surface combined with high tensile strength (2,770 N). The double-hinge design ensures even load distribution across the pin, preventing plate deformation under heavy central loads.\nconstraints: The 3.05 kg/m weight requires reinforced conveyor frames and high-quality wear strips (UHMW-PE) to manage energy consumption and friction.\nPlate_Width_mm: 254.0\nMax_Working_Load_N: 2770\nWeight_kg_m: 3.05\nMaterial: LF\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LF821_K1200", "label": "movex_chain_LF821_K1200", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LF821_K1200\nRef: LF 821 K1200\nseries: 821 Series\nproduct_type: Straight Running Chain\nusage: Maximum-width heavy-duty conveying for industrial bulk handling. Optimized for the largest footprints in the series, such as industrial pallets, large machinery parts, or wide mass-flow accumulation zones.\nkey_features: Maximum available width of 304.8 mm (12 inches) with the robust 821 series double-hinge platform. Offers the highest surface stability while maintaining a massive 2,770 N working load capacity.\nconstraints: Heaviest model in the series (3.35 kg/m). Not recommended for high-speed operation due to high mass inertia; best suited for low-to-medium speed, high-torque lines.\nPlate_Width_mm: 304.8\nMax_Working_Load_N: 2770\nWeight_kg_m: 3.35\nMaterial: LF\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LF880_TAB_K325", "label": "movex_chain_LF880_TAB_K325", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LF880_TAB_K325\nRef: LF 880 TAB K325\nseries: 880 Series\nproduct_type: Sideflexing Chain\nusage: Standard side-flexing conveying for low- to medium-speed curved layouts. Ideal for transporting single-file items like PET bottles, glass bottles, and aluminum cans through complex filling and packaging lines.\nkey_features: Features a TAB hold-down system to prevent lifting in curves. Offers a standard 457 mm minimum turning radius, balancing compact layout design with smooth product flow.\nconstraints: Requires TAB-profile wear strips. Minimum curve radius is 457 mm. Not interchangeable with Bevel-type chains.\nPlate_Width_mm: 82.5\nMax_Working_Load_N: 2200\nWeight_kg_m: 1.015\nMin_curve_radius_mm: 457\nMaterial: LF\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LF880_TAB_K450", "label": "movex_chain_LF880_TAB_K450", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LF880_TAB_K450\nRef: LF 880 TAB K450\nseries: 880 Series\nproduct_type: Sideflexing Chain\nusage: Wide-base side-flexing conveying for larger unstable containers. Suited for 2-liter bottles, square juice cartons, or wide glass jars navigating curved conveyor sections.\nkey_features: Wide 114.3 mm plate improves stability for top-heavy products in turns. Maintains the compact 457 mm turning radius despite the increased width, allowing flexibility in line design.\nconstraints: Higher friction coefficients in curves due to increased surface contact. Requires wider track support. Minimum curve radius 457 mm.\nPlate_Width_mm: 114.3\nMax_Working_Load_N: 2200\nWeight_kg_m: 1.09\nMin_curve_radius_mm: 457\nMaterial: LF\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LF882_TAB_K750", "label": "movex_chain_LF882_TAB_K750", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LF882_TAB_K750\nRef: LF 882 TAB K750\nseries: 882 Series\nproduct_type: Sideflexing Chain\nusage: Heavy-duty curved conveying for industrial loads. Standard choice for handling beer kegs, automotive batteries, and loaded plastic crates requiring a rugged side-flexing solution.\nkey_features: Offers superior tensile strength (3,830 N) for high-load loop layouts. Reinforced hinge construction minimizes wear and elongation compared to standard 880 chains.\nconstraints: Minimum turning radius is 610 mm (wider than 880 series). Requires heavy-duty 882 series sprockets and tracks.\nPlate_Width_mm: 190.5\nMax_Working_Load_N: 3830\nWeight_kg_m: 2.45\nMaterial: LF\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LF882_TAB_K1000", "label": "movex_chain_LF882_TAB_K1000", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LF882_TAB_K1000\nRef: LF 882 TAB K1000\nseries: 882 Series\nproduct_type: Sideflexing Chain\nusage: Wide-track heavy-duty conveying for large containers. Ideal for chemical drums, jerry cans, and large secondary packaging boxes that need to navigate turns without transfers.\nkey_features: 254 mm width provides excellent stability for top-heavy industrial containers in curves. Robust TAB design ensures secure track engagement under high side-loads.\nconstraints: High chain weight (2.85 kg/m) increases friction. Requires 610 mm radius curves and robust drive systems.\nPlate_Width_mm: 254.0\nMax_Working_Load_N: 3830\nWeight_kg_m: 2.85\nMaterial: LF\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LF882_TAB_K1200", "label": "movex_chain_LF882_TAB_K1200", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LF882_TAB_K1200\nRef: LF 882 TAB K1200\nseries: 882 Series\nproduct_type: Sideflexing Chain\nusage: Maximum-width side-flexing for bulk accumulation. Specialized for mass-flow layouts handling heavy volumes of glass or PET bottles, allowing for wide accumulation zones with curved returns.\nkey_features: Widest side-flexing option (304.8 mm). Enables the design of high-capacity accumulation tables with fewer chain strands while maintaining high load capacity.\nconstraints: Heaviest option (3.40 kg/m) with significant inertial mass. Not suitable for high-speed start-stop applications. Requires lubrication in curves.\nPlate_Width_mm: 304.8\nMax_Working_Load_N: 3830\nWeight_kg_m: 3.4\nMaterial: LF\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LFN_83_MFM", "label": "movex_chain_LFN_83_MFM", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LFN_83_MFM\nRef: LFN 83 MFM\nseries: 83 MFM PRO Series\nproduct_type: Sideflexing Chain\nusage: Premium high-speed conveying for bottling lines utilizing magnetic curve tracks. Optimized for maximum efficiency in transporting standard beverage containers (PET/Glass) with minimal noise and vibration.\nkey_features: Short 33.5 mm pitch ensures ultra-smooth operation at high speeds. The magnetic system design removes the need for hold-down tabs, creating a hygienic, easy-to-clean surface ideal for food safety compliance.\nconstraints: Requires magnetic corner tracks. 33.5 mm pitch is NOT compatible with standard 38.1 mm sprockets or chains.\nPlate_Width_mm: 83.0\nMax_Working_Load_N: 2400\nWeight_kg_m: 0.955\nRadius_min_mm: 160.0\nPitch_mm: 33.5\nLinks_m: 5.025 m (150 links)\nMaterial: LFN\nPivot_material: MX White\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_chain_LFN_103_MFH", "label": "movex_chain_LFN_103_MFH", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_chain_LFN_103_MFH\nRef: LFN 103 MFH\nseries: 103 MFM PRO Series\nproduct_type: Sideflexing Chain\nusage: Wide-format high-performance conveying for larger containers in magnetic track systems. Perfect for premium packaging lines where product stability and throughput speed are paramount.\nkey_features: 103 mm width offers enhanced stability for larger bottles. Incorporates MX Pivot technology to resist wear and elongation, making it the most durable solution for heavy-duty high-speed loops.\nconstraints: Exclusive to magnetic track systems. Pitch (33.5mm) and sprocket dimensions differ from standard series. Best suited for new high-efficiency line installations.\nPlate_Width_mm: 103.0\nMax_Working_Load_N: 2400\nWeight_kg_m: 1.648\nRadius_min_mm: 170.0\nPitch_mm: 35.5\nLinks_m: 5.041 m (142 links)\nMaterial: LFN\nPivot_material: MX White\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_sprocket_58801", "label": "movex_sprocket_58801", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_sprocket_58801\nArt_Nr: 58801\nseries: 83 MFM PRO\nproduct_type: Sprocket\nusage: Used as a main drive component for 83 MFM PRO sideflexing chains in high-speed bottling and packaging lines.\nkey_features: Machined from high-grade Polyamide, includes Stainless steel screws and Zinc plated steel nuts, precision tooth profile for reduced vibration.\nconstraints: Strictly compatible with 83 MFM PRO series only. Not interchangeable with standard 83 M series.\nZ_Teeth: 12\nBore_mm: 25.0\nPD_mm: 129.4\nOD_mm: 140.0\nS_mm: 77.7\ncompatible_chain: 83 MFM PRO\nSprocket_Type: Drive\nmanufacturing_process: Machined\nMaterial: Polyamide\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_sprocket_57801", "label": "movex_sprocket_57801", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_sprocket_57801\nArt_Nr: 57801\nseries: 103 MFH PRO\nproduct_type: Sprocket\nusage: Main drive gear for the 103 MFH PRO series, the largest and strongest chain in the MF PRO family.\nkey_features: Heavy-duty machined design, optimized for high torque transmission, corrosion-resistant hardware included.\nconstraints: Compatible only with 103 MFH PRO chains. Ensure proper shaft alignment for maximum wear life.\nZ_Teeth: 12\nBore_mm: 25.0\nPD_mm: 137.2\nOD_mm: 144.5\nS_mm: 82.5\ncompatible_chain: 103 MFH PRO\nSprocket_Type: Drive\nmanufacturing_process: Machined\nMaterial: Polyamide\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_sprocket_54201", "label": "movex_sprocket_54201", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_sprocket_54201\nArt_Nr: 54201\nseries: 820 Series\nproduct_type: Sprocket\nusage: Primary drive or idler component for straight running conveyor systems. Widely used in general food and beverage packaging lines.\nkey_features: Manufactured from Reinforced Polyamide (Black); cost-effective solution for high-volume production; robust design for standard industrial environments.\nconstraints: Standard precision levels; not recommended for extremely high-speed lines where noise reduction is critical.\nZ_Teeth: 21\nBore_mm: 25.0\nPD_mm: 129.3\nOD_mm: 129.0\nS_mm: 67.8\ncompatible_chain: 820 Series\nSprocket_Type: Drive\nmanufacturing_process: Molded\nMaterial: Polyamide\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_sprocket_54301", "label": "movex_sprocket_54301", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_sprocket_54301\nArt_Nr: 54301\nseries: 820 Series\nproduct_type: Sprocket\nusage: Primary drive or idler component for straight running conveyor systems. Widely used in general food and beverage packaging lines.\nkey_features: Manufactured from Reinforced Polyamide (Black); cost-effective solution for high-volume production; robust design for standard industrial environments.\nconstraints: Standard precision levels; not recommended for extremely high-speed lines where noise reduction is critical.\nZ_Teeth: 23\nBore_mm: 25.0\nPD_mm: 141.2\nOD_mm: 142.0\nS_mm: 73.8\ncompatible_chain: 820 Series\nSprocket_Type: Drive\nmanufacturing_process: Molded\nMaterial: Polyamide\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_sprocket_54401", "label": "movex_sprocket_54401", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_sprocket_54401\nArt_Nr: 54401\nseries: 820 Series\nproduct_type: Sprocket\nusage: Primary drive or idler component for straight running conveyor systems. Widely used in general food and beverage packaging lines.\nkey_features: Manufactured from Reinforced Polyamide (Black); cost-effective solution for high-volume production; robust design for standard industrial environments.\nconstraints: Standard precision levels; not recommended for extremely high-speed lines where noise reduction is critical.\nZ_Teeth: 25\nBore_mm: 25.0\nPD_mm: 153.2\nOD_mm: 154.0\nS_mm: 79.8\ncompatible_chain: 820 Series\nSprocket_Type: Drive\nmanufacturing_process: Molded\nMaterial: Polyamide\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_sprocket_54901", "label": "movex_sprocket_54901", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_sprocket_54901\nArt_Nr: 54901\nseries: 880 Series\nproduct_type: Sideflexing Sprocket\nusage: Specifically designed for sideflexing (curved) conveyor systems that require compact layouts.\nkey_features: Optimized tooth profile to engage with TAB or Bevel retention systems of the 880 series; provides stable chain tracking through curves.\nconstraints: Must ensure proper alignment of the curve tracks with the sprocket position to prevent chain pulsation.\nZ_Teeth: 10\nBore_mm: 25.0\nPD_mm: 123.3\nOD_mm: 122.0\nS_mm: 65.25\ncompatible_chain: 880 Series (Used also for Series  828 - 878 TAB - 879 M - 879 TAB - 888 TAB - 888 TAB GT).\nSprocket_Type: Drive\nmanufacturing_process: Molded\nMaterial: Polyamide\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_sprocket_55001", "label": "movex_sprocket_55001", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_sprocket_55001\nArt_Nr: 55001\nseries: 880 Series\nproduct_type: Sideflexing Sprocket\nusage: Specifically designed for sideflexing (curved) conveyor systems that require compact layouts.\nkey_features: Optimized tooth profile to engage with TAB or Bevel retention systems of the 880 series; provides stable chain tracking through curves.\nconstraints: Must ensure proper alignment of the curve tracks with the sprocket position to prevent chain pulsation.\nZ_Teeth: 12\nBore_mm: 25.0\nPD_mm: 147.2\nOD_mm: 147.3\nS_mm: 77.2\ncompatible_chain: 880 Series (Used also for Series  828 - 878 TAB - 879 M - 879 TAB - 888 TAB - 888 TAB GT).\nSprocket_Type: Drive\nmanufacturing_process: Molded\nMaterial: Polyamide\n"}, {"font": {"color": "black"}, "group": "Product", "id": "product:movex_sprocket_55601", "label": "movex_sprocket_55601", "shape": "dot", "size": 15, "title": "Type: Product\nproduct_id: movex_sprocket_55601\nArt_Nr: 55601\nseries: 882 Series\nproduct_type: Heavy-Duty Sprocket\nusage: Designed for high-load sideflexing applications, such as glass bottle handling or heavy crate conveying.\nkey_features: Wide tooth face to accommodate the higher tensile strength of the 882 series; reinforced structure to handle high torque transmission.\nconstraints: Requires higher torque from the drive motor; ensure the shaft diameter is sufficient for heavy-duty loads.\nZ_Teeth: 12\nBore_mm: 25.0\nPD_mm: 147.2\nOD_mm: 149.0\nS_mm: 78.4\ncompatible_chain: 882 Series (Also suitable for Series  8257).\nSprocket_Type: Drive\nmanufacturing_process: Molded\nMaterial: Polyamide\n"}, {"font": {"color": "black"}, "group": "Series", "id": "series:820", "label": "820", "shape": "dot", "size": 25, "title": "Type: Series\nname: 820 Series\nseries_num: 820\n"}, {"font": {"color": "black"}, "group": "Material", "id": "material:LF", "label": "LF", "shape": "dot", "size": 25, "title": "Type: Material\nmaterial_code: LF\nfull_name: Low Friction Acetal\ndescription: The standard low-friction acetal resin used for a wide range of conveying applications. It provides a good balance between friction coefficient and mechanical strength.\nbest_used_for: [\u0027General purpose conveying\u0027, \u0027Standard bottling and packaging lines\u0027]\n"}, {"font": {"color": "black"}, "group": "Series", "id": "series:821", "label": "821", "shape": "dot", "size": 25, "title": "Type: Series\nname: 821 Series\nseries_num: 821\n"}, {"font": {"color": "black"}, "group": "Series", "id": "series:880", "label": "880", "shape": "dot", "size": 25, "title": "Type: Series\nname: 880 Series\nseries_num: 880\n"}, {"font": {"color": "black"}, "group": "Series", "id": "series:882", "label": "882", "shape": "dot", "size": 25, "title": "Type: Series\nname: 882 Series\nseries_num: 882\n"}, {"font": {"color": "black"}, "group": "Series", "id": "series:83", "label": "83", "shape": "dot", "size": 25, "title": "Type: Series\nname: 83 MFM PRO Series\nseries_num: 83\n"}, {"font": {"color": "black"}, "group": "Material", "id": "material:LFN", "label": "LFN", "shape": "dot", "size": 25, "title": "Type: Material\nmaterial_code: LFN\nfull_name: Low Friction (White/Natural)\ndescription: A low-friction material variant often used in the MF PRO and standard series, particularly where high visibility or specific material purity is required.\nbest_used_for: [\u0027Food and beverage primary packaging\u0027, \u0027Hygienic environments\u0027, \u0027Inspection-heavy conveying lines\u0027]\n"}, {"font": {"color": "black"}, "group": "Series", "id": "series:103", "label": "103", "shape": "dot", "size": 25, "title": "Type: Series\nname: 103 MFM PRO Series\nseries_num: 103\n"}, {"font": {"color": "black"}, "group": "Material", "id": "material:Polyamide", "label": "Polyamide", "shape": "dot", "size": 25, "title": "Type: Material\nmaterial_code: Polyamide\nfull_name: Polyamide (PA) / Nylon\ndescription: A high-strength engineering plastic with excellent mechanical properties, high rigidity, and good wear resistance. In Movex systems, it is the primary material for high-precision machined sprockets.\nbest_used_for: [\u0027Drive and Idler sprockets for MF PRO and other chain series\u0027, \u0027Power transmission components requiring high durability\u0027, \u0027Applications where high-impact resistance is needed\u0027]\n"}, {"font": {"color": "black"}, "group": "ManufacturingProcess", "id": "process:Machined", "label": "Machined", "shape": "dot", "size": 25, "title": "Type: ManufacturingProcess\nprocess_name: Machined\nfull_name: Precision Machined (Fresata)\ndescription: CNC machined from solid engineering plastic blocks. This process ensures the highest level of precision and smooth surface finish for sprocket teeth.\nbest_used_for: [\u0027High-speed bottling and packaging lines\u0027, \u0027Environments where noise reduction is critical\u0027, \u0027High-load applications requiring maximum reliability\u0027]\n"}, {"font": {"color": "black"}, "group": "ManufacturingProcess", "id": "process:Molded", "label": "Molded", "shape": "dot", "size": 25, "title": "Type: ManufacturingProcess\nprocess_name: Molded\nfull_name: Injection Molded (Stampata)\ndescription: Produced using high-pressure injection molding tools. This is the standard manufacturing method for high-volume production.\nbest_used_for: [\u0027General purpose conveyors with moderate speeds\u0027, \u0027Budget-conscious projects\u0027, \u0027Standard food and beverage lines\u0027]\n"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K325", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:820"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K325", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LF"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K325", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54201"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K325", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54301"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K325", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54401"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K400", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:820"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K400", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LF"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K400", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54201"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K400", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54301"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K400", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54401"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K450", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:820"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K450", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LF"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K450", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54201"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K450", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54301"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K450", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54401"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K600", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:820"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K600", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LF"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K600", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54201"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K600", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54301"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K600", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54401"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K750", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:820"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K750", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LF"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K750", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54201"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K750", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54301"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF820_K750", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54401"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF821_K750", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:821"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF821_K750", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LF"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF821_K1000", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:821"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF821_K1000", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LF"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF821_K1200", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:821"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF821_K1200", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LF"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF880_TAB_K325", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:880"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF880_TAB_K325", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LF"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF880_TAB_K325", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54901"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF880_TAB_K325", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_55001"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF880_TAB_K450", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:880"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF880_TAB_K450", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LF"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF880_TAB_K450", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_54901"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF880_TAB_K450", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_55001"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF882_TAB_K750", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:882"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF882_TAB_K750", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LF"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF882_TAB_K750", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_55601"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF882_TAB_K1000", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:882"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF882_TAB_K1000", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LF"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF882_TAB_K1000", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_55601"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF882_TAB_K1200", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:882"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF882_TAB_K1200", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LF"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LF882_TAB_K1200", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_55601"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LFN_83_MFM", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:83"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LFN_83_MFM", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LFN"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LFN_83_MFM", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_58801"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LFN_103_MFH", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:103"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LFN_103_MFH", "label": "MADE_OF", "title": "MADE_OF", "to": "material:LFN"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_chain_LFN_103_MFH", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_sprocket_57801"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_58801", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:83"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_58801", "label": "MADE_OF", "title": "MADE_OF", "to": "material:Polyamide"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_58801", "label": "USES_PROCESS", "title": "USES_PROCESS", "to": "process:Machined"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_58801", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LFN_83_MFM"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_57801", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:103"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_57801", "label": "MADE_OF", "title": "MADE_OF", "to": "material:Polyamide"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_57801", "label": "USES_PROCESS", "title": "USES_PROCESS", "to": "process:Machined"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_57801", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LFN_103_MFH"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54201", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:820"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54201", "label": "MADE_OF", "title": "MADE_OF", "to": "material:Polyamide"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54201", "label": "USES_PROCESS", "title": "USES_PROCESS", "to": "process:Molded"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54201", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K325"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54201", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K400"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54201", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K450"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54201", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K600"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54201", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K750"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54301", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:820"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54301", "label": "MADE_OF", "title": "MADE_OF", "to": "material:Polyamide"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54301", "label": "USES_PROCESS", "title": "USES_PROCESS", "to": "process:Molded"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54301", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K325"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54301", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K400"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54301", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K450"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54301", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K600"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54301", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K750"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54401", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:820"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54401", "label": "MADE_OF", "title": "MADE_OF", "to": "material:Polyamide"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54401", "label": "USES_PROCESS", "title": "USES_PROCESS", "to": "process:Molded"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54401", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K325"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54401", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K400"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54401", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K450"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54401", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K600"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54401", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF820_K750"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54901", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:880"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54901", "label": "MADE_OF", "title": "MADE_OF", "to": "material:Polyamide"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54901", "label": "USES_PROCESS", "title": "USES_PROCESS", "to": "process:Molded"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54901", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF880_TAB_K325"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_54901", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF880_TAB_K450"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_55001", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:880"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_55001", "label": "MADE_OF", "title": "MADE_OF", "to": "material:Polyamide"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_55001", "label": "USES_PROCESS", "title": "USES_PROCESS", "to": "process:Molded"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_55001", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF880_TAB_K325"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_55001", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF880_TAB_K450"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_55601", "label": "BELONGS_TO", "title": "BELONGS_TO", "to": "series:882"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_55601", "label": "MADE_OF", "title": "MADE_OF", "to": "material:Polyamide"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_55601", "label": "USES_PROCESS", "title": "USES_PROCESS", "to": "process:Molded"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_55601", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF882_TAB_K750"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_55601", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF882_TAB_K1000"}, {"arrows": "to", "color": "#aaaaaa", "from": "product:movex_sprocket_55601", "label": "COMPATIBLE_WITH", "title": "COMPATIBLE_WITH", "to": "product:movex_chain_LF882_TAB_K1200"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
