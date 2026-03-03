@@ -367,6 +367,9 @@ def filter_product_specs(
     spec_type: str,
     condition: str,
     target_value: float,
+    product_type: str = None,
+    sort_by: str = None,    
+    sort_order: str = "asc",     
 ) -> str:
     """
     กรองสินค้าตาม spec — ใช้ Qdrant payload filter (v4)
@@ -417,6 +420,8 @@ def filter_product_specs(
             if km:
                 val = (float(km.group(1)) / 100) * 25.4
         if val is not None:
+            if product_type and product_type.lower() not in p.get("product_type", "").lower():
+                continue
             ok = (condition == "<"  and val <  target_value or
                   condition == "<=" and val <= target_value or
                   condition == ">"  and val >  target_value or
@@ -424,6 +429,9 @@ def filter_product_specs(
                   condition == "==" and val == target_value)
             if ok:
                 matched.append(f"{pid} ({val})")
+    if sort_by and matched:
+        matched.sort(key=lambda x: float(re.search(r'[\d.]+', x.split('(')[1]).group()), 
+                     reverse=(sort_order == "desc"))            
     if not matched:
         return f"ไม่พบสินค้าที่มี {spec_type} {condition} {target_value}"
     return f"พบ {len(matched)} รุ่น ได้แก่: {', '.join(matched)}"
@@ -532,6 +540,11 @@ def _build_system_prompt(json_context: str, graph_summary: str,vit_signal=None) 
    ห้ามใช้ Tool เพื่อหา Sprocket ถ้า GraphRAG Context มีข้อมูลอยู่แล้ว
 3. เปรียบเทียบ 2 รุ่นขึ้นไป → Tool: compare_specific_products
 4. กรองตาม spec ตัวเลข เช่น "กว้างไม่เกิน 100mm" → Tool: filter_product_specs
+5. query มีคำต่อไปนี้ → เรียก filter_product_specs ทันทีก่อนตอบ ห้ามตอบจาก RAG Context โดยตรง:
+   - "เบาสุด / น้ำหนักน้อยสุด / lightweight"  → spec_type="weight", condition=">=", target_value=0, sort_by="weight", sort_order="asc"
+   - "รับโหลดสูงสุด / แข็งแรงสุด"             → spec_type="load",   condition=">=", target_value=0, sort_by="load",   sort_order="desc"
+   - "กว้างสุด / กว้างมากสุด"                  → spec_type="width",  condition=">=", target_value=0, sort_by="width",  sort_order="desc"
+   - "width ≥ X / กว้างอย่างน้อย X mm"         → spec_type="width",  condition=">=", target_value=X, product_type="chain"
 """
 
 
