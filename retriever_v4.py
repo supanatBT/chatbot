@@ -668,6 +668,16 @@ class RetrieverV4:
         # ── Seed products ──────────────────────────────────
         seed_ids = []
 
+         # ── เพิ่มตรงนี้ — Art.Nr. detector ───────────────────
+        ART_NR_RE = re.compile(r'\b5[4-9]\d{3}\b')
+        art_matches = ART_NR_RE.findall(query)
+        if art_matches:
+            for nr in art_matches:
+                for pid, p in self.product_db.items():
+                    if str(p.get("Art_Nr", "")) == nr:
+                        seed_ids.append(pid)
+                        break
+
         # 1. ViT hits (ถ้ามีรูป)
         if vit_signal.series or vit_signal.top_pid:
             vit_seeds = [

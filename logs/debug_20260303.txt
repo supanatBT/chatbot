@@ -936,3 +936,59 @@ TURN  sess_154056_eb2e47_t001  [2026-03-03T15:40:56.827]
   vit_series_ok      : False
   error              : 
 
+══════════════════════════════════════════════════════════════════════
+TURN  sess_191612_cadaa2_t001  [2026-03-03T19:16:12.141]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : Sprocket Art.Nr. 55601 ใช้ได้กับ chain รุ่นไหน?
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : Sprocket Art.Nr. 55601 ใช้ได้กับ chain รุ่นไหน?
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=keyword  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=9
+  Top-5 after RRF:
+    movex_sprocket_54201                      rrf=0.01608  kw=0.0  txt=[0, 1, 2, 3, 5]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_58801                      rrf=0.01412  kw=0.0  txt=[4, 8, 11, 12, 19]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_57801                      rrf=0.01412  kw=0.0  txt=[6, 9, 10, 14, 15]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_55601                      rrf=0.01376  kw=0.0  txt=[7, 13, 18]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_54401                      rrf=0.01316  kw=0.0  txt=[16]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54201                      final=0.0161  CE=0.00  RRF=0.0161  kw=0.0
+  [2] movex_sprocket_58801                      final=0.0141  CE=0.00  RRF=0.0141  kw=0.0
+  [3] movex_sprocket_57801                      final=0.0141  CE=0.00  RRF=0.0141  kw=0.0
+  [4] movex_sprocket_55601                      final=0.0138  CE=0.00  RRF=0.0138  kw=0.0
+  [5] movex_sprocket_54401                      final=0.0132  CE=0.00  RRF=0.0132  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=3003.5ms
+  reply_preview: Sprocket Art.Nr. 55601 สามารถใช้ได้กับ chain รุ่น LF882_TAB_K750, LF882_TAB_K1000 และ LF882_TAB_K1200 ครับ
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
