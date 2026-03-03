@@ -1,5 +1,4 @@
 """
-fix ce and vit signal
 chatbot_v4.py
 =============
 Movex Sales AI Assistant v4 — Adaptive Multi-Signal Pipeline
@@ -7,7 +6,7 @@ Movex Sales AI Assistant v4 — Adaptive Multi-Signal Pipeline
 เปลี่ยนจาก v3:
   ✦ ใช้ RetrieverV4 — confidence-weighted RRF + multi-hop graph + series filter
   ✦ InstrumentedRetriever ใหม่ — hook เข้า v4 internal states โดยตรง
-  ✦ Reranker ใช้ enriched query จาก build_enriched_rerank_query()
+  ✦ Reranker ถูกรวมเข้า RetrieverV4.rank() แล้ว — ไม่มี CE model
   ✦ filter_product_specs ใช้ Qdrant payload filter ผ่าน retriever.filter_by_spec()
   ✦ _build_graph_summary รับ GraphResult แทน GraphContext
   ✦ ทุกอย่างอื่น (UI, logger, tools, system prompt) คงเดิม
@@ -31,8 +30,7 @@ from transformers import (
 from peft import PeftModel
 
 from knowledge_graph import KnowledgeGraph
-from retriever_v4 import RetrieverV4, RetrieverV4Config, ViTSignal, GraphResult
-from reranker import Reranker, RerankerConfig
+from retriever_v4 import RetrieverV4, RetrieverV4Config, ViTSignal, GraphResult, RankedProduct, RankedResult
 from pipeline_logger import PipelineLogger
 
 # ================================================================
@@ -106,9 +104,6 @@ _retriever_inner = RetrieverV4(
     kg=kg,
 )
 print("✅ RetrieverV4 + KnowledgeGraph")
-
-reranker = Reranker(RerankerConfig(final_top_k=5))
-print("✅ Reranker")
 
 genai.configure(api_key=GEMINI_API_KEY)
 print("✅ Gemini configured")
@@ -629,7 +624,7 @@ def chat_interaction(
             # ViT ไม่ได้รันเพราะไม่มีรูป ใช้ signal จาก turn ก่อนแทน
             vit_sig = last_vit_signal
             raw_refs_html += f"**ViT (carry-over):** series={vit_sig.series} conf={vit_sig.confidence:.3f}\n"
-            retrieval_result.vit_signal = vit_sig
+
         # ── carry-over graph_result เมื่อเป็น follow-up ─────
         if is_followup and last_graph_result:
             # inject graph ของ turn ก่อนเข้า retrieval result
@@ -701,25 +696,18 @@ def chat_interaction(
             return chat_history, chat_history, raw_refs_html, last_pid, session_id
 
         # ════════════════════════════════════════════════════
-        # PHASE 4: Rerank skip use rerank.py
+        # PHASE 4: Rank — Keyword Boost + Final Sort
+        # (ย้ายมาจาก reranker.py — ไม่มี CE model แล้ว)
         # ════════════════════════════════════════════════════
-    
-        base_query = user_text or "ค้นหาจากรูปภาพ"
-        rerank_query = _retriever_inner.build_enriched_rerank_query(
-            base_query=base_query,
-            vit_signal=vit_sig if vit_sig.series else None,
-            graph_result=retrieval_result.graph_result,
-        )
-        reranked_result = reranker.rerank(
-            query=rerank_query,
-            retrieval_result=retrieval_result,
-        )
+        retrieval_result.vit_signal = vit_sig
+        ranked_result = _retriever_inner.rank(retrieval_result)
+        raw_refs_html += f"**Mode:** RRF+KeywordBoost (no CE)\n"
 
-        logger.log_reranker(turn_log, reranked_result)
+        logger.log_reranker(turn_log, ranked_result)
 
         # ── Build LLM context ───────────────────────────────
         llm_context: list[dict] = []
-        for rank, p in enumerate(reranked_result.products, 1):
+        for rank, p in enumerate(ranked_result.products, 1):
             pid = p.product_id
             raw_refs_html += (
                 f"**{rank}. {pid}** "
@@ -789,8 +777,8 @@ def chat_interaction(
     new_last_pids = []
     try:
         # 1. จาก reranked products — ครบที่สุด
-        if "reranked_result" in dir() and reranked_result:
-            for p in reranked_result.products[:3]:
+        if "ranked_result" in dir() and ranked_result:
+            for p in ranked_result.products[:3]:
                 if p.product_id not in new_last_pids:
                     new_last_pids.append(p.product_id)
 

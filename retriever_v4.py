@@ -127,6 +127,51 @@ class RetrievalResultV4:
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# RANKED RESULT — ย้ายมาจาก reranker.py
+# chatbot และ logger ใช้ 2 class นี้โดยตรง
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+@dataclass
+class RankedProduct:
+    """Product หลัง keyword boost + final sort"""
+    product_id:          str
+    final_score:         float
+    cross_encoder_score: float = 0.0   # คงไว้เพื่อ compat กับ logger/debug
+    rrf_score:           float = 0.0
+    matched_chunks:      list  = field(default_factory=list)
+    matched_images:      list  = field(default_factory=list)
+    series:              str   = ""
+    product_type:        str   = ""
+    material:            str   = ""
+    keyword_boost:       float = 0.0
+    best_chunk_text:     str   = ""
+
+
+@dataclass
+class RankedResult:
+    """ผลลัพธ์สุดท้ายที่ chatbot รับไปใช้"""
+    products:           list
+    query_used:         str
+    image_search_used:  bool           = False
+    vit_series_filter:  Optional[str]  = None
+    total_candidates:   int            = 0
+    graph_context:      object         = None
+    graph_result:       object         = None
+
+    def top(self, k: int = 5) -> list:
+        return self.products[:k]
+
+    def to_llm_context(self, k: int = 3) -> str:
+        parts = []
+        for i, p in enumerate(self.products[:k], 1):
+            parts.append(
+                f"[Product {i}] {p.product_id} (score: {p.final_score:.3f})\n"
+                f"{p.best_chunk_text}"
+            )
+        return "\n\n---\n\n".join(parts)
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # CONFIG
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -148,6 +193,10 @@ class RetrieverV4Config:
 
     # Image search threshold
     image_distance_threshold: float = 0.64
+
+    # Final output
+    final_ranked_top_k:  int   = 5      # จำนวน product ที่ส่งให้ LLM
+    keyword_boost_bonus: float = 0.15   # บวกเพิ่มถ้า keyword match
 
     # Graph
     graph_max_hop:       int  = 2
@@ -348,6 +397,55 @@ class RetrieverV4:
             parts.append(f"[TopProduct:{vit_signal.top_pid}]")
         parts.append(base_query)
         return " ".join(parts)
+
+    def rank(self, retrieval_result: RetrievalResultV4) -> RankedResult:
+        """
+        Phase 4 (ย้ายมาจาก reranker.py) — Keyword Boost + Final Sort + Slice
+
+        ไม่มี CE model — ใช้ RRF score จาก retriever โดยตรง
+        บวก keyword_boost_bonus ถ้า product มี keyword match
+        แล้ว slice เหลือ final_ranked_top_k ก่อนส่ง LLM
+        """
+        candidates = retrieval_result.products
+
+        ranked = []
+        for p in candidates:
+            score = p.rrf_score
+            if p.keyword_boost > 0:
+                score += self.cfg.keyword_boost_bonus
+            # best_chunk_text — เลือก chunk แรกที่มี text
+            best_text = ""
+            for chunk in (p.matched_chunks or []):
+                t = chunk.get("text", "") if isinstance(chunk, dict) else str(chunk)
+                if t:
+                    best_text = t
+                    break
+
+            ranked.append(RankedProduct(
+                product_id=p.product_id,
+                final_score=score,
+                cross_encoder_score=0.0,
+                rrf_score=p.rrf_score,
+                matched_chunks=p.matched_chunks,
+                matched_images=getattr(p, "matched_images", []),
+                series=p.series,
+                product_type=p.product_type,
+                material=p.material,
+                keyword_boost=p.keyword_boost,
+                best_chunk_text=best_text,
+            ))
+
+        ranked.sort(key=lambda x: x.final_score, reverse=True)
+
+        return RankedResult(
+            products=ranked[:self.cfg.final_ranked_top_k],
+            query_used=retrieval_result.query_used,
+            image_search_used=retrieval_result.image_search_used,
+            vit_series_filter=retrieval_result.vit_series_filter,
+            total_candidates=retrieval_result.total_candidates,
+            graph_context=retrieval_result.graph_context,
+            graph_result=retrieval_result.graph_result,
+        )
 
     def filter_by_spec(
         self,
