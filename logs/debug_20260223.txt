@@ -1,0 +1,1671 @@
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162214_9a82c0_t001  [2026-02-23T16:22:14.942]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : 
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : ลูกค้าส่งรูปภาพมา
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9626  series=820  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=8
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54401                      final=0.7263  CE=6.85  RRF=0.0031  kw=0.0
+  [2] movex_sprocket_54301                      final=0.7253  CE=6.82  RRF=0.0033  kw=0.0
+  [3] movex_sprocket_54201                      final=0.7000  CE=6.87  RRF=0.0011  kw=0.0
+  [4] movex_chain_LF820_K325                    final=0.4005  CE=3.01  RRF=0.0208  kw=0.0
+  [5] movex_chain_LF820_K400                    final=0.1061  CE=2.85  RRF=0.0031  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=14983.1ms
+  reply_preview: จากรูปภาพที่ส่งมา เป็นสายพานลำเลียงตรง (Straight Running Chain) ซีรีส์ 820 ครับ/ค่ะ ทำจากวัสดุ Low Friction Acetal (LF) 
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : False
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162239_fcc2ae_t001  [2026-02-23T16:22:51.197]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : 
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : ลูกค้าส่งรูปภาพมา
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9359  series=880  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=4
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54901                      final=0.7215  CE=7.07  RRF=0.0046  kw=0.0
+  [2] movex_sprocket_55001                      final=0.6675  CE=6.82  RRF=0.0034  kw=0.0
+  [3] movex_chain_LF880_TAB_K450                final=0.3227  CE=1.90  RRF=0.0207  kw=0.0
+  [4] movex_chain_LF880_TAB_K325                final=0.3000  CE=1.70  RRF=0.0208  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=True  signal='สินค้าที่ลำเลียง'
+  tool_calls=0  latency=7166.5ms
+  reply_preview: สวัสดีครับ จากรูปภาพที่ส่งมา เป็นสายพานลำเลียงแบบเลี้ยวได้ (Sideflexing Chain) ของ Movex 880 Series ครับ
+
+เพื่อให้ผมแนะน
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162302_02d55a_t001  [2026-02-23T16:23:17.117]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : 
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : ลูกค้าส่งรูปภาพมา
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.1573  series=None  dominant=False
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=keyword  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=10
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_57801                      final=0.7286  CE=6.26  RRF=0.0125  kw=0.0
+  [2] movex_chain_LF820_K325                    final=0.4934  CE=3.06  RRF=0.0233  kw=0.0
+  [3] movex_sprocket_54301                      final=0.4518  CE=4.26  RRF=0.0126  kw=0.0
+  [4] movex_chain_LF880_TAB_K450                final=0.3280  CE=1.40  RRF=0.0266  kw=0.0
+  [5] movex_chain_LF880_TAB_K325                final=0.3023  CE=1.40  RRF=0.0253  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=6842.4ms
+  reply_preview: ต้องขออภัยด้วยนะครับ จากรูปภาพที่ลูกค้าส่งมานั้น ไม่ได้เป็นรูปภาพของสินค้า Movex พวกสายพานหรือ Sprocket ทำให้ผมไม่สามารถ
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : False
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162327_b01b44_t001  [2026-02-23T16:23:58.142]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : เลี้ยวได้ไหม
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : เลี้ยวได้ไหม
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=True  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9626  series=820  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=10
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_chain_LF882_TAB_K750                final=0.8868  CE=1.20  RRF=1.6000  kw=8.0
+  [2] movex_chain_LF820_K325                    final=0.7032  CE=3.01  RRF=0.0206  kw=0.0
+  [3] movex_chain_LFN_103_MFH                   final=0.6491  CE=-0.43  RRF=1.6000  kw=8.0
+  [4] movex_chain_LF820_K450                    final=0.6143  CE=2.42  RRF=0.0036  kw=0.0
+  [5] movex_chain_LF820_K750                    final=0.6062  CE=2.37  RRF=0.0046  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=7857.0ms
+  reply_preview: จากภาพที่ให้มา สายพานรุ่นนี้เป็นแบบที่สามารถเลี้ยวได้ครับ/ค่ะ
+
+แต่เพื่อที่จะแนะนำรุ่นที่เหมาะสมและถูกต้องที่สุด ผมขอสอบถ
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : True
+  straight_ok        : False
+  ref_in_reply       : False
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162422_36f4c9_t001  [2026-02-23T16:24:49.774]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : workload เท่าไหร่
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : workload เท่าไหร่
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9626  series=820  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=8
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54201                      final=0.7159  CE=6.61  RRF=0.0011  kw=0.0
+  [2] movex_sprocket_54301                      final=0.6944  CE=6.57  RRF=0.0000  kw=0.0
+  [3] movex_sprocket_54401                      final=0.6911  CE=6.55  RRF=0.0000  kw=0.0
+  [4] movex_chain_LF820_K325                    final=0.3852  CE=2.47  RRF=0.0204  kw=0.0
+  [5] movex_chain_LF820_K400                    final=0.1683  CE=2.71  RRF=0.0033  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=4736.4ms
+  reply_preview: จากภาพที่เห็น สินค้าที่น่าจะเป็นไปได้มากที่สุดคือสายพาน Movex รุ่น LF 820 K325 ครับ
+
+สายพานรุ่นนี้มี **Max Working Load 
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162500_3dc323_t001  [2026-02-23T16:25:12.231]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : workload เท่าไหร่
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : workload เท่าไหร่
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9626  series=820  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=8
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54201                      final=0.7159  CE=6.61  RRF=0.0011  kw=0.0
+  [2] movex_sprocket_54301                      final=0.6944  CE=6.57  RRF=0.0000  kw=0.0
+  [3] movex_sprocket_54401                      final=0.6911  CE=6.55  RRF=0.0000  kw=0.0
+  [4] movex_chain_LF820_K325                    final=0.3852  CE=2.47  RRF=0.0204  kw=0.0
+  [5] movex_chain_LF820_K400                    final=0.1683  CE=2.71  RRF=0.0033  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=True  signal='สินค้าที่ลำเลียง'
+  tool_calls=0  latency=9220.3ms
+  reply_preview: สวัสดีครับ/ค่ะ จากรูปภาพที่ให้มา เป็นสายพานลำเลียงแบบตรง (Straight Running Chain) ในซีรีส์ 820 นะครับ/คะ
+
+เพื่อที่จะให้ข
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162531_b7208b_t001  [2026-02-23T16:25:41.476]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : workload เท่าไหร่
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : workload เท่าไหร่
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9626  series=820  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=8
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54201                      final=0.7159  CE=6.61  RRF=0.0011  kw=0.0
+  [2] movex_sprocket_54301                      final=0.6944  CE=6.57  RRF=0.0000  kw=0.0
+  [3] movex_sprocket_54401                      final=0.6911  CE=6.55  RRF=0.0000  kw=0.0
+  [4] movex_chain_LF820_K325                    final=0.3852  CE=2.47  RRF=0.0204  kw=0.0
+  [5] movex_chain_LF820_K400                    final=0.1683  CE=2.71  RRF=0.0033  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=7186.0ms
+  reply_preview: จากภาพที่ท่านให้มา เป็นสายพานลำเลียงแบบตรง (Straight Running Chain) ในซีรีส์ 820 ครับ
+
+สำหรับสายพานซีรีส์ 820 เช่นรุ่น L
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162557_1c7985_t001  [2026-02-23T16:26:05.811]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : workload เท่าไหร่
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : workload เท่าไหร่
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9626  series=820  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=8
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54201                      final=0.7159  CE=6.61  RRF=0.0011  kw=0.0
+  [2] movex_sprocket_54301                      final=0.6944  CE=6.57  RRF=0.0000  kw=0.0
+  [3] movex_sprocket_54401                      final=0.6911  CE=6.55  RRF=0.0000  kw=0.0
+  [4] movex_chain_LF820_K325                    final=0.3852  CE=2.47  RRF=0.0204  kw=0.0
+  [5] movex_chain_LF820_K400                    final=0.1683  CE=2.71  RRF=0.0033  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=4871.0ms
+  reply_preview: จากภาพสายพานที่คุณลูกค้าส่งมาให้ ดูเหมือนจะเป็นรุ่น Movex LF 820 K325 นะครับ
+
+สำหรับสายพานรุ่น LF 820 K325 นี้ มีค่า Max
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162557_1c7985_t002  [2026-02-23T16:26:18.497]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : กว้างเท่าไหร่
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : LF 820 K325 กว้างเท่าไหร่
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=['820']
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=keyword  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=9
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54301                      final=0.7000  CE=6.53  RRF=0.0000  kw=0.0
+  [2] movex_sprocket_54201                      final=0.6961  CE=6.47  RRF=0.0000  kw=0.0
+  [3] movex_sprocket_54401                      final=0.6955  CE=6.46  RRF=0.0000  kw=0.0
+  [4] movex_chain_LF820_K325                    final=0.5434  CE=-3.08  RRF=2.0157  kw=10.0
+  [5] movex_chain_LF820_K450                    final=0.3128  CE=-3.43  RRF=0.6144  kw=3.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=3083.4ms
+  reply_preview: สำหรับสายพานรุ่น LF 820 K325 มีความกว้างของแผ่น (Plate Width) อยู่ที่ **82.5 มม.** ครับผม
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : True
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162624_0738c6_t001  [2026-02-23T16:26:37.441]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : ใช้สเตอร์ตัวไหน
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : ใช้สเตอร์ตัวไหน
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9152  series=880  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=4
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54901                      final=0.7224  CE=7.10  RRF=0.0053  kw=0.0
+  [2] movex_sprocket_55001                      final=0.6687  CE=6.86  RRF=0.0041  kw=0.0
+  [3] movex_chain_LF880_TAB_K450                final=0.3505  CE=2.05  RRF=0.0203  kw=0.0
+  [4] movex_chain_LF880_TAB_K325                final=0.2894  CE=1.66  RRF=0.0197  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=6281.5ms
+  reply_preview: จากรูปภาพที่ส่งมา เป็นสายพานรุ่น 880 Series ที่สามารถเลี้ยวโค้งได้ครับ
+
+สำหรับสเตอร์ที่เข้ากันได้กับสายพานรุ่น 880 Serie
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162624_0738c6_t002  [2026-02-23T16:26:51.047]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : สเตอร์นั้นผลิตยังไง
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : 54901 สเตอร์นั้นผลิตยังไง
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=keyword  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=10
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54901                      final=0.7261  CE=3.37  RRF=2.0150  kw=10.0
+  [2] movex_chain_LF820_K325                    final=0.7000  CE=4.96  RRF=0.0000  kw=0.0
+  [3] movex_chain_LF880_TAB_K325                final=0.6877  CE=4.91  RRF=0.0000  kw=0.0
+  [4] movex_chain_LF880_TAB_K450                final=0.5142  CE=4.26  RRF=0.0000  kw=0.0
+  [5] movex_chain_LF821_K1200                   final=0.2694  CE=3.34  RRF=0.0134  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=5902.1ms
+  reply_preview: สเตอร์ Movex รุ่น 54901 นั้นผลิตด้วยกระบวนการ **Injection Molded (Stampata)** หรือการฉีดขึ้นรูปครับ
+
+กระบวนการนี้จะใช้เค
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162712_4a9b86_t001  [2026-02-23T16:27:18.394]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : LF820 K325 workload เท่าไหร่
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : LF820 K325 workload เท่าไหร่
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=none  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=7
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_chain_LF820_K325                    final=0.9792  CE=5.29  RRF=0.0149  kw=0.0
+  [2] movex_chain_LF820_K400                    final=0.8041  CE=4.61  RRF=0.0144  kw=0.0
+  [3] movex_chain_LF880_TAB_K325                final=0.7088  CE=4.43  RRF=0.0139  kw=0.0
+  [4] movex_chain_LF820_K750                    final=0.6379  CE=3.12  RRF=0.0151  kw=0.0
+  [5] movex_chain_LF820_K450                    final=0.5262  CE=2.89  RRF=0.0145  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=3095.9ms
+  reply_preview: สำหรับสายพานรุ่น LF 820 K325 สามารถรับน้ำหนักใช้งานสูงสุดได้ 1625 N ครับ
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162723_d08d02_t001  [2026-02-23T16:27:29.968]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : มีสายพานที่เลี้ยวได้ไหม
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : มีสายพานที่เลี้ยวได้ไหม
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=True  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=keyword  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=10
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_chain_LFN_83_MFM                    final=1.1472  CE=-1.49  RRF=1.6000  kw=8.0
+  [2] movex_chain_LFN_103_MFH                   final=1.0040  CE=-2.06  RRF=1.6000  kw=8.0
+  [3] movex_chain_LF882_TAB_K750                final=0.9671  CE=-2.21  RRF=1.6143  kw=8.0
+  [4] movex_chain_LF880_TAB_K450                final=0.5189  CE=-3.96  RRF=1.6147  kw=8.0
+  [5] movex_chain_LF882_TAB_K1200               final=0.4626  CE=-4.17  RRF=1.6000  kw=8.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=5228.7ms
+  reply_preview: มีสายพานที่เลี้ยวได้ครับ/ค่ะ เพื่อให้ Movex Assistant แนะนำได้ตรงกับความต้องการที่สุด ขอสอบถามข้อมูลเพิ่มเติมดังนี้ครับ/
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : True
+  straight_ok        : False
+  ref_in_reply       : False
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_162738_cb6cc0_t001  [2026-02-23T16:27:47.025]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : 54901 ใช้กับสายพานตัวไหน
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : 54901 ใช้กับสายพานตัวไหน
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=keyword  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=10
+  Top-5 after RRF:
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54901                      final=0.7808  CE=3.23  RRF=2.0138  kw=10.0
+  [2] movex_chain_LF880_TAB_K325                final=0.7000  CE=4.83  RRF=0.0000  kw=0.0
+  [3] movex_chain_LF880_TAB_K450                final=0.5465  CE=4.16  RRF=0.0000  kw=0.0
+  [4] movex_sprocket_54401                      final=0.4102  CE=2.53  RRF=0.6000  kw=3.0
+  [5] movex_sprocket_54201                      final=0.4098  CE=2.52  RRF=0.6131  kw=3.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=5880.6ms
+  reply_preview: สำหรับ Sprocket รุ่น 54901 ซึ่งเป็น Sideflexing Sprocket ในซีรีส์ 880 นะคะ สามารถใช้กับสายพานรุ่นต่อไปนี้ได้ค่ะ:
+
+*   **
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_164932_4f6ca3_t001  [2026-02-23T16:49:32.716]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : 
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : ลูกค้าส่งรูปภาพมา
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9626  series=820  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=8
+  Top-5 after RRF:
+    movex_chain_LF820_K325                    rrf=0.02078  kw=0.0  txt=[7, 8]  vit=0  sig=0  grph=-1.0
+    movex_chain_LF820_K750                    rrf=0.00430  kw=0.0  txt=[16, 18]  vit=None  sig=1  grph=-1.0
+    movex_chain_LF820_K600                    rrf=0.00368  kw=0.0  txt=[2, 3]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K450                    rrf=0.00352  kw=0.0  txt=[0, 1, 9, 11]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_54301                      rrf=0.00334  kw=0.0  txt=[4, 5, 6, 10, 19]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_chain_LF820_K325                    final=0.0208  CE=0.00  RRF=0.0208  kw=0.0
+  [2] movex_chain_LF820_K750                    final=0.0043  CE=0.00  RRF=0.0043  kw=0.0
+  [3] movex_chain_LF820_K600                    final=0.0037  CE=0.00  RRF=0.0037  kw=0.0
+  [4] movex_chain_LF820_K450                    final=0.0035  CE=0.00  RRF=0.0035  kw=0.0
+  [5] movex_sprocket_54301                      final=0.0033  CE=0.00  RRF=0.0033  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=5609.8ms
+  reply_preview: จากภาพที่ท่านส่งมา คาดว่านี่คือสายพาน Movex รุ่น **LF 820 K325** ครับ เป็นสายพานแบบ Straight Running Chain หรือสายพานวิ่
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_164946_e7c83f_t001  [2026-02-23T16:49:57.141]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : 
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : ลูกค้าส่งรูปภาพมา
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9152  series=880  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=4
+  Top-5 after RRF:
+    movex_chain_LF880_TAB_K450                rrf=0.02085  kw=0.0  txt=[0, 1, 4, 5]  vit=0  sig=1  grph=-1.0
+    movex_chain_LF880_TAB_K325                rrf=0.02025  kw=0.0  txt=[2, 3, 6, 7]  vit=2  sig=0  grph=-1.0
+    movex_sprocket_54901                      rrf=0.00484  kw=0.0  txt=[8, 9, 10, 12, 13]  vit=None  sig=17  grph=-1.0
+    movex_sprocket_55001                      rrf=0.00359  kw=0.0  txt=[11, 14, 15, 16, 17]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_chain_LF880_TAB_K450                final=0.0209  CE=0.00  RRF=0.0209  kw=0.0
+  [2] movex_chain_LF880_TAB_K325                final=0.0202  CE=0.00  RRF=0.0202  kw=0.0
+  [3] movex_sprocket_54901                      final=0.0048  CE=0.00  RRF=0.0048  kw=0.0
+  [4] movex_sprocket_55001                      final=0.0036  CE=0.00  RRF=0.0036  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=True  signal='สินค้าที่ลำเลียง'
+  tool_calls=0  latency=7144.3ms
+  reply_preview: จากภาพที่ลูกค้าส่งมา เป็นสายพานแบบเลี้ยวได้ (Sideflexing Chain) ในซีรีส์ 880 ครับ และทำจากวัสดุ Low Friction Acetal (LF)
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_165007_b6bb1a_t001  [2026-02-23T16:50:29.450]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : เลี้ยวได้ไหม
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : เลี้ยวได้ไหม
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=True  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.966  series=820  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=8
+  Top-5 after RRF:
+    movex_chain_LF820_K325                    rrf=0.02064  kw=0.0  txt=[6, 7, 14, 16]  vit=0  sig=0  grph=-1.0
+    movex_chain_LF820_K750                    rrf=0.00457  kw=0.0  txt=[4, 5, 13, 17]  vit=None  sig=1  grph=-1.0
+    movex_chain_LF820_K450                    rrf=0.00351  kw=0.0  txt=[0, 2, 8, 9]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K400                    rrf=0.00338  kw=0.0  txt=[1, 3, 10, 15]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K600                    rrf=0.00303  kw=0.0  txt=[11, 12, 18, 19]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54201                      final=0.7157  CE=6.87  RRF=0.0011  kw=0.0
+  [2] movex_sprocket_54401                      final=0.6959  CE=6.85  RRF=0.0000  kw=0.0
+  [3] movex_sprocket_54301                      final=0.6909  CE=6.82  RRF=0.0000  kw=0.0
+  [4] movex_chain_LF820_K325                    final=0.4005  CE=3.01  RRF=0.0206  kw=0.0
+  [5] movex_chain_LF820_K400                    final=0.1241  CE=2.85  RRF=0.0034  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=5046.0ms
+  reply_preview: จากภาพที่ท่านส่งมาเป็นสายพานรุ่น LF 820 K325 นะครับ สายพานรุ่นนี้เป็นแบบ Straight Running Chain หรือสายพานวิ่งตรง จึงไม่
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_165037_dffded_t001  [2026-02-23T16:50:51.080]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : workload เท่าไหร่
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : workload เท่าไหร่
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9765  series=820  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=8
+  Top-5 after RRF:
+    movex_chain_LF820_K325                    rrf=0.02047  kw=0.0  txt=[12, 17, 18, 19]  vit=0  sig=0  grph=-1.0
+    movex_chain_LF820_K750                    rrf=0.00466  kw=0.0  txt=[0, 3, 4, 14]  vit=None  sig=1  grph=-1.0
+    movex_chain_LF820_K600                    rrf=0.00327  kw=0.0  txt=[2, 6, 7, 13]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K450                    rrf=0.00321  kw=0.0  txt=[1, 8, 9, 15]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K400                    rrf=0.00310  kw=0.0  txt=[5, 10, 11, 16]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54201                      final=0.7158  CE=6.61  RRF=0.0011  kw=0.0
+  [2] movex_sprocket_54301                      final=0.6944  CE=6.57  RRF=0.0000  kw=0.0
+  [3] movex_sprocket_54401                      final=0.6911  CE=6.55  RRF=0.0000  kw=0.0
+  [4] movex_chain_LF820_K325                    final=0.3852  CE=2.47  RRF=0.0205  kw=0.0
+  [5] movex_chain_LF820_K400                    final=0.1658  CE=2.71  RRF=0.0031  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=3939.5ms
+  reply_preview: จากภาพที่คุณลูกค้าให้มา เป็นสายพานรุ่น LF 820 K325 นะครับ
+
+สายพานรุ่นนี้มี **Max. Working Load (น้ำหนักใช้งานสูงสุด)** อ
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_165037_dffded_t002  [2026-02-23T16:51:01.795]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : กว้างเท่าไหร่
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : LF 820 K325 กว้างเท่าไหร่
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=3  sideflex=False  straight=False  series=['820']
+    [exact       ] movex_chain_LF820_K325  boost=10.0
+    [fuzzy_mid   ] movex_chain_LF820_K450  boost=3.0
+    [fuzzy_mid   ] movex_chain_LF820_K750  boost=3.0
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=keyword  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=9
+  Top-5 after RRF:
+    movex_chain_LF820_K325                    rrf=2.01569  kw=10.0  txt=[0, 2, 6, 7]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K450                    rrf=0.61435  kw=3.0  txt=[5, 10, 14]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K750                    rrf=0.61403  kw=3.0  txt=[1, 11, 15, 18]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K400                    rrf=0.01418  kw=0.0  txt=[3, 8, 12, 19]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF880_TAB_K325                rrf=0.01402  kw=0.0  txt=[4, 13, 17]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54301                      final=0.7000  CE=6.53  RRF=0.0000  kw=0.0
+  [2] movex_sprocket_54201                      final=0.6961  CE=6.47  RRF=0.0000  kw=0.0
+  [3] movex_sprocket_54401                      final=0.6955  CE=6.46  RRF=0.0000  kw=0.0
+  [4] movex_chain_LF820_K325                    final=0.5434  CE=-3.08  RRF=2.0157  kw=10.0
+  [5] movex_chain_LF820_K450                    final=0.3128  CE=-3.43  RRF=0.6144  kw=3.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=2308.2ms
+  reply_preview: สายพานรุ่น LF 820 K325 มีความกว้างหน้าอยู่ที่ **82.5 มม.** ครับ
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : True
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_165107_e72e0f_t001  [2026-02-23T16:51:34.838]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : ใช้สเตอร์ตัวไหน
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : ใช้สเตอร์ตัวไหน
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9393  series=880  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=4
+  Top-5 after RRF:
+    movex_chain_LF880_TAB_K450                rrf=0.02039  kw=0.0  txt=[10, 11, 13, 16]  vit=0  sig=1  grph=-1.0
+    movex_chain_LF880_TAB_K325                rrf=0.02007  kw=0.0  txt=[12, 14, 15, 17]  vit=1  sig=0  grph=-1.0
+    movex_sprocket_54901                      rrf=0.00498  kw=0.0  txt=[0, 1, 2, 6, 7]  vit=None  sig=16  grph=-1.0
+    movex_sprocket_55001                      rrf=0.00378  kw=0.0  txt=[3, 4, 5, 8, 9]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54901                      final=0.7218  CE=7.10  RRF=0.0050  kw=0.0
+  [2] movex_sprocket_55001                      final=0.6687  CE=6.86  RRF=0.0038  kw=0.0
+  [3] movex_chain_LF880_TAB_K450                final=0.3505  CE=2.05  RRF=0.0204  kw=0.0
+  [4] movex_chain_LF880_TAB_K325                final=0.2941  CE=1.66  RRF=0.0201  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=5156.2ms
+  reply_preview: จากรูปภาพเป็นสายพานรุ่น 880 Series Sideflexing Chain สามารถใช้ร่วมกับสเตอร์ Drive ได้ 2 รุ่น ดังนี้ครับ:
+
+1.  **รหัสสินค
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_165107_e72e0f_t002  [2026-02-23T16:51:53.901]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : สเตอร์นั้นผลิตยังไง
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : 54901 สเตอร์นั้นผลิตยังไง
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=4  sideflex=False  straight=False  series=[]
+    [exact       ] movex_sprocket_54901  boost=10.0
+    [fuzzy_mid   ] movex_sprocket_54201  boost=3.0
+    [fuzzy_mid   ] movex_sprocket_54301  boost=3.0
+    [fuzzy_mid   ] movex_sprocket_54401  boost=3.0
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=keyword  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=15
+  Top-5 after RRF:
+    movex_sprocket_54901                      rrf=2.01500  kw=10.0  txt=[3, 8, 9]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_54201                      rrf=0.61484  kw=3.0  txt=[0, 1, 7, 10, 19]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_54301                      rrf=0.61429  kw=3.0  txt=[5, 6, 14, 15]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_54401                      rrf=0.60000  kw=3.0  txt=[]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF821_K750                    rrf=0.01429  kw=0.0  txt=[2, 12, 16]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54901                      final=0.7261  CE=3.37  RRF=2.0150  kw=10.0
+  [2] movex_chain_LF820_K325                    final=0.7000  CE=4.96  RRF=0.0000  kw=0.0
+  [3] movex_chain_LF880_TAB_K325                final=0.6877  CE=4.91  RRF=0.0000  kw=0.0
+  [4] movex_chain_LF880_TAB_K450                final=0.5142  CE=4.26  RRF=0.0000  kw=0.0
+  [5] movex_chain_LF821_K1200                   final=0.2694  CE=3.34  RRF=0.0134  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=8819.4ms
+  reply_preview: สำหรับสเตอร์รุ่น 54901 นะครับ ผลิตด้วยกระบวนการ Injection Molded (แบบฉีดขึ้นรูป) ครับ
+
+โดยใช้เครื่องมือฉีดขึ้นรูปแรงดันส
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_165248_deb2f0_t001  [2026-02-23T16:52:59.580]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : LF820 K325 workload เท่าไหร่
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : LF820 K325 workload เท่าไหร่
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=none  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=7
+  Top-5 after RRF:
+    movex_chain_LF820_K750                    rrf=0.01509  kw=0.0  txt=[1, 5, 7, 12]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K325                    rrf=0.01493  kw=0.0  txt=[0, 8, 9, 11]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K450                    rrf=0.01449  kw=0.0  txt=[4, 14]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K400                    rrf=0.01442  kw=0.0  txt=[3, 10, 15]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF880_TAB_K325                rrf=0.01389  kw=0.0  txt=[2, 13, 16, 17]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_chain_LF820_K325                    final=0.9792  CE=5.29  RRF=0.0149  kw=0.0
+  [2] movex_chain_LF820_K400                    final=0.8041  CE=4.61  RRF=0.0144  kw=0.0
+  [3] movex_chain_LF880_TAB_K325                final=0.7088  CE=4.43  RRF=0.0139  kw=0.0
+  [4] movex_chain_LF820_K750                    final=0.6379  CE=3.12  RRF=0.0151  kw=0.0
+  [5] movex_chain_LF820_K450                    final=0.5262  CE=2.89  RRF=0.0145  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=2726.1ms
+  reply_preview: สายพานรุ่น LF 820 K325 รับน้ำหนักสูงสุด (Max Working Load) ได้ 1625 นิวตัน ครับ/ค่ะ
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_165248_deb2f0_t002  [2026-02-23T16:53:28.892]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : มีตัวที่รับได้หนักกว่านี้ไหมที่เป็นตัวที่วิ่งทางตรง
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : LF 820 K325 มีตัวที่รับได้หนักกว่านี้ไหมที่เป็นตัวที่วิ่งทางตรง
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=5  sideflex=False  straight=True  series=['820']
+    [exact       ] movex_chain_LF820_K325  boost=10.0
+    [fuzzy_high  ] movex_chain_LF820_K400  boost=8.0
+    [fuzzy_high  ] movex_chain_LF820_K450  boost=8.0
+    [fuzzy_high  ] movex_chain_LF820_K600  boost=8.0
+    [fuzzy_high  ] movex_chain_LF820_K750  boost=8.0
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=keyword  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=10
+  Top-5 after RRF:
+    movex_chain_LF820_K325                    rrf=2.01569  kw=10.0  txt=[0, 2, 6, 7]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K400                    rrf=1.61544  kw=8.0  txt=[1, 3, 5, 10]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K750                    rrf=1.61449  kw=8.0  txt=[4, 9, 11, 12]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K450                    rrf=1.61351  kw=8.0  txt=[8, 15, 16, 17]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF820_K600                    rrf=1.61266  kw=8.0  txt=[19]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54301                      final=0.7000  CE=6.53  RRF=0.0000  kw=0.0
+  [2] movex_sprocket_54201                      final=0.6961  CE=6.47  RRF=0.0000  kw=0.0
+  [3] movex_sprocket_54401                      final=0.6955  CE=6.46  RRF=0.0000  kw=0.0
+  [4] movex_chain_LF820_K325                    final=0.5434  CE=-3.08  RRF=2.0157  kw=10.0
+  [5] movex_chain_LF820_K400                    final=0.5050  CE=-2.75  RRF=1.6154  kw=8.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=1  latency=6032.3ms
+    → filter_product_specs({'spec_type': 'load', 'target_value': 1625.0, 'condition': '>'})  result='พบ 10 รุ่นที่ load > 1625.0:
+  movex_chain_LF821_K1000 (2770)
+  movex_chain_LF82'
+  reply_preview: มีสายพานวิ่งทางตรงหลายรุ่นเลยครับ/ค่ะ ที่สามารถรับน้ำหนักได้มากกว่า 1625 นิวตัน:
+
+*   **Movex 821 Series:**
+    *   LF82
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : True
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_165355_3b44d6_t001  [2026-02-23T16:54:01.528]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : มีสายพานที่เลี้ยวได้ไหม
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : มีสายพานที่เลี้ยวได้ไหม
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=7  sideflex=True  straight=False  series=[]
+    [fuzzy_high  ] movex_chain_LF880_TAB_K325  boost=8.0
+    [fuzzy_high  ] movex_chain_LF880_TAB_K450  boost=8.0
+    [fuzzy_high  ] movex_chain_LF882_TAB_K750  boost=8.0
+    [fuzzy_high  ] movex_chain_LF882_TAB_K1000  boost=8.0
+    [fuzzy_high  ] movex_chain_LF882_TAB_K1200  boost=8.0
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=keyword  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=13
+  Top-5 after RRF:
+    movex_chain_LF880_TAB_K450                rrf=1.61471  kw=8.0  txt=[5, 7, 12]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF882_TAB_K750                rrf=1.61429  kw=8.0  txt=[6, 10, 14]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF880_TAB_K325                rrf=1.61327  kw=8.0  txt=[13, 16, 17]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF882_TAB_K1000               rrf=1.60000  kw=8.0  txt=[]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF882_TAB_K1200               rrf=1.60000  kw=8.0  txt=[]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_chain_LFN_83_MFM                    final=1.1472  CE=-1.49  RRF=1.6000  kw=8.0
+  [2] movex_chain_LFN_103_MFH                   final=1.0040  CE=-2.06  RRF=1.6000  kw=8.0
+  [3] movex_chain_LF882_TAB_K750                final=0.9671  CE=-2.21  RRF=1.6143  kw=8.0
+  [4] movex_chain_LF880_TAB_K450                final=0.5189  CE=-3.96  RRF=1.6147  kw=8.0
+  [5] movex_chain_LF882_TAB_K1200               final=0.4626  CE=-4.17  RRF=1.6000  kw=8.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=3532.9ms
+  reply_preview: รบกวนขอสอบถามข้อมูลเพิ่มเติมเพื่อแนะนำสายพานที่เหมาะสมที่สุดให้นะคะ
+
+*   **ความกว้างของสายพานที่ต้องการ:** 82.5 มม. / 10
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : True
+  straight_ok        : False
+  ref_in_reply       : False
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_170955_efa14a_t001  [2026-02-23T17:09:55.110]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : ใช้สเตอร์ตัวไหน
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : ใช้สเตอร์ตัวไหน
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9393  series=880  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=4
+  Top-5 after RRF:
+    movex_chain_LF880_TAB_K450                rrf=0.02039  kw=0.0  txt=[10, 11, 13, 16]  vit=0  sig=1  grph=-1.0
+    movex_chain_LF880_TAB_K325                rrf=0.02007  kw=0.0  txt=[12, 14, 15, 17]  vit=1  sig=0  grph=-1.0
+    movex_sprocket_54901                      rrf=0.00498  kw=0.0  txt=[0, 1, 2, 6, 7]  vit=None  sig=16  grph=-1.0
+    movex_sprocket_55001                      rrf=0.00378  kw=0.0  txt=[3, 4, 5, 8, 9]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54901                      final=0.7218  CE=7.10  RRF=0.0050  kw=0.0
+  [2] movex_sprocket_55001                      final=0.6687  CE=6.86  RRF=0.0038  kw=0.0
+  [3] movex_chain_LF880_TAB_K450                final=0.3505  CE=2.05  RRF=0.0204  kw=0.0
+  [4] movex_chain_LF880_TAB_K325                final=0.2941  CE=1.66  RRF=0.0201  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=8987.6ms
+  reply_preview: จากรูปภาพที่คุณลูกค้าให้มา คาดว่าน่าจะเป็นสายพานซีรีส์ 880 Sideflexing นะครับ/คะ สำหรับสเตอร์ที่สามารถใช้งานร่วมกันได้ ม
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_170955_efa14a_t002  [2026-02-23T17:10:22.015]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : สเตอร์นั้นผลิตยังไง
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : movex_sprocket_54901 movex_sprocket_55001 movex_chain_LF880_TAB_K450 สเตอร์นั้นผ
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=none  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=6
+  Top-5 after RRF:
+    movex_sprocket_55001                      rrf=0.01511  kw=0.0  txt=[1, 3, 5, 8, 14]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_54901                      rrf=0.01497  kw=0.0  txt=[0, 2, 7, 9, 16]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF880_TAB_K450                rrf=0.01418  kw=0.0  txt=[4, 6, 13, 19]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF882_TAB_K1000               rrf=0.01409  kw=0.0  txt=[11]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF882_TAB_K750                rrf=0.01351  kw=0.0  txt=[10, 18]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_55001                      final=0.9809  CE=6.86  RRF=0.0151  kw=0.0
+  [2] movex_sprocket_54901                      final=0.9762  CE=7.10  RRF=0.0150  kw=0.0
+  [3] movex_sprocket_54401                      final=0.5754  CE=5.51  RRF=0.0134  kw=0.0
+  [4] movex_chain_LF880_TAB_K450                final=0.4424  CE=2.05  RRF=0.0142  kw=0.0
+  [5] movex_chain_LF882_TAB_K750                final=0.3537  CE=2.42  RRF=0.0135  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=2429.9ms
+  reply_preview: สเตอร์ทั้งสองรุ่น ได้แก่ **รุ่น 54901 (10 ฟัน)** และ **รุ่น 55001 (12 ฟัน)** ผลิตโดยกระบวนการ **Injection Molded (Stampa
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_171722_8df00c_t001  [2026-02-23T17:17:22.497]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : ใช้สเตอร์ตัวไหน
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : ใช้สเตอร์ตัวไหน
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9393  series=880  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=4
+  Top-5 after RRF:
+    movex_chain_LF880_TAB_K450                rrf=0.02039  kw=0.0  txt=[10, 11, 13, 16]  vit=0  sig=1  grph=-1.0
+    movex_chain_LF880_TAB_K325                rrf=0.02007  kw=0.0  txt=[12, 14, 15, 17]  vit=1  sig=0  grph=-1.0
+    movex_sprocket_54901                      rrf=0.00498  kw=0.0  txt=[0, 1, 2, 6, 7]  vit=None  sig=16  grph=-1.0
+    movex_sprocket_55001                      rrf=0.00378  kw=0.0  txt=[3, 4, 5, 8, 9]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54901                      final=0.7218  CE=7.10  RRF=0.0050  kw=0.0
+  [2] movex_sprocket_55001                      final=0.6687  CE=6.86  RRF=0.0038  kw=0.0
+  [3] movex_chain_LF880_TAB_K450                final=0.3505  CE=2.05  RRF=0.0204  kw=0.0
+  [4] movex_chain_LF880_TAB_K325                final=0.2941  CE=1.66  RRF=0.0201  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=5246.2ms
+  reply_preview: จากรูปภาพที่คุณลูกค้าให้มา สินค้าน่าจะเป็นสายพานในซีรีส์ 880 Sideflexing Chain นะครับ
+
+สำหรับสเตอร์ที่เข้ากันได้กับสายพา
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : False
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_171722_8df00c_t002  [2026-02-23T17:17:41.749]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : สเตอร์นั้นผลิตยังไง
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : movex_sprocket_54901 movex_sprocket_55001 movex_chain_LF880_TAB_K450 สเตอร์นั้นผ
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=none  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=6
+  Top-5 after RRF:
+    movex_sprocket_55001                      rrf=0.01511  kw=0.0  txt=[1, 3, 5, 8, 14]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_54901                      rrf=0.01497  kw=0.0  txt=[0, 2, 7, 9, 16]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF880_TAB_K450                rrf=0.01418  kw=0.0  txt=[4, 6, 13, 19]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF882_TAB_K1000               rrf=0.01409  kw=0.0  txt=[11]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF882_TAB_K750                rrf=0.01351  kw=0.0  txt=[10, 18]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_55001                      final=0.9809  CE=6.86  RRF=0.0151  kw=0.0
+  [2] movex_sprocket_54901                      final=0.9762  CE=7.10  RRF=0.0150  kw=0.0
+  [3] movex_sprocket_54401                      final=0.5754  CE=5.51  RRF=0.0134  kw=0.0
+  [4] movex_chain_LF880_TAB_K450                final=0.4424  CE=2.05  RRF=0.0142  kw=0.0
+  [5] movex_chain_LF882_TAB_K750                final=0.3537  CE=2.42  RRF=0.0135  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=2562.6ms
+  reply_preview: สเตอร์ทั้งสองรุ่นที่ผมได้แนะนำไป คือ Movex Sprocket Art.Nr. 54901 และ Movex Sprocket Art.Nr. 55001 นั้น **ผลิตด้วยกระบวน
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_171859_13b30f_t001  [2026-02-23T17:18:59.175]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : ใช้สเตอร์ตัวไหน
+  HAS_IMAGE   : True
+  EFFECTIVE_Q : ใช้สเตอร์ตัวไหน
+  QUERY_TYPE  : image
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  vit_top_score=0.9393  series=880  dominant=True
+  vit_hits=0  siglip_hits=0
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=vit  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=4
+  Top-5 after RRF:
+    movex_chain_LF880_TAB_K450                rrf=0.02039  kw=0.0  txt=[10, 11, 13, 16]  vit=0  sig=1  grph=-1.0
+    movex_chain_LF880_TAB_K325                rrf=0.02007  kw=0.0  txt=[12, 14, 15, 17]  vit=1  sig=0  grph=-1.0
+    movex_sprocket_54901                      rrf=0.00498  kw=0.0  txt=[0, 1, 2, 6, 7]  vit=None  sig=16  grph=-1.0
+    movex_sprocket_55001                      rrf=0.00378  kw=0.0  txt=[3, 4, 5, 8, 9]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_54901                      final=0.7218  CE=7.10  RRF=0.0050  kw=0.0
+  [2] movex_sprocket_55001                      final=0.6687  CE=6.86  RRF=0.0038  kw=0.0
+  [3] movex_chain_LF880_TAB_K450                final=0.3505  CE=2.05  RRF=0.0204  kw=0.0
+  [4] movex_chain_LF880_TAB_K325                final=0.2941  CE=1.66  RRF=0.0201  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=6085.3ms
+  reply_preview: สำหรับสายพาน 880 Series ที่เลี้ยวได้ในภาพ สามารถใช้สเตอร์ขับรุ่นเหล่านี้ได้ครับ:
+
+*   รุ่น **54901** (มี 10 ฟัน)
+*   รุ่
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
+══════════════════════════════════════════════════════════════════════
+TURN  sess_171859_13b30f_t002  [2026-02-23T17:19:17.105]
+══════════════════════════════════════════════════════════════════════
+  INPUT       : สเตอร์นั้นผลิตยังไง
+  HAS_IMAGE   : False
+  EFFECTIVE_Q : movex_sprocket_54901 movex_sprocket_55001 movex_chain_LF880_TAB_K450 สเตอร์นั้นผ
+  QUERY_TYPE  : general
+
+── STEP 1: Keyword Boost ──────────────────────────────
+  hits=0  sideflex=False  straight=False  series=[]
+
+── STEP 2: Image Search ───────────────────────────────
+  (not triggered)
+
+── STEP 3: GraphRAG ───────────────────────────────────
+  triggered_by=none  seeds=[]
+  same_series(0) → []
+  compatible(0) → []
+  materials=[]
+  processes=[]
+  total_graph_candidates=0
+
+── STEP 4: Text Search ────────────────────────────────
+  skipped=False  reason=  hits=0
+
+── STEP 5: RRF Fusion ─────────────────────────────────
+  total_candidates=6
+  Top-5 after RRF:
+    movex_sprocket_55001                      rrf=0.01511  kw=0.0  txt=[1, 3, 5, 8, 14]  vit=None  sig=None  grph=-1.0
+    movex_sprocket_54901                      rrf=0.01497  kw=0.0  txt=[0, 2, 7, 9, 16]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF880_TAB_K450                rrf=0.01418  kw=0.0  txt=[4, 6, 13, 19]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF882_TAB_K1000               rrf=0.01409  kw=0.0  txt=[11]  vit=None  sig=None  grph=-1.0
+    movex_chain_LF882_TAB_K750                rrf=0.01351  kw=0.0  txt=[10, 18]  vit=None  sig=None  grph=-1.0
+
+── STEP 6: Reranker ───────────────────────────────────
+  [1] movex_sprocket_55001                      final=0.9809  CE=6.86  RRF=0.0151  kw=0.0
+  [2] movex_sprocket_54901                      final=0.9762  CE=7.10  RRF=0.0150  kw=0.0
+  [3] movex_sprocket_54401                      final=0.5754  CE=5.51  RRF=0.0134  kw=0.0
+  [4] movex_chain_LF880_TAB_K450                final=0.4424  CE=2.05  RRF=0.0142  kw=0.0
+  [5] movex_chain_LF882_TAB_K750                final=0.3537  CE=2.42  RRF=0.0135  kw=0.0
+
+── STEP 7: LLM (Gemini) ───────────────────────────────
+  clarification=False  signal=''
+  tool_calls=0  latency=4285.3ms
+  reply_preview: สเตอร์ทั้งสองรุ่น ทั้ง **54901** และ **55001** ผลิตด้วยกระบวนการ **Injection Molded (Stampata)** ครับ
+
+กระบวนการนี้เป็นก
+
+── STEP 8: Eval Flags ─────────────────────────────────
+  top1_series_ok     : False
+  sideflex_ok        : False
+  straight_ok        : False
+  ref_in_reply       : True
+  graph_contributed  : False
+  clarif_ok (broad)  : False
+  vit_series_ok      : False
+  error              : 
+
