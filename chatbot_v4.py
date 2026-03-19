@@ -687,7 +687,7 @@ def _build_system_prompt(json_context: str, graph_summary: str,vit_signal=None) 
    - "รับโหลดสูงสุด / แข็งแรงสุด"             → spec_type="load",   condition=">=", target_value=0, sort_by="load",   sort_order="desc"
    - "กว้างสุด / กว้างมากสุด"                  → spec_type="width",  condition=">=", target_value=0, sort_by="width",  sort_order="desc"
    - "width ≥ X / กว้างอย่างน้อย X mm"         → spec_type="width",  condition=">=", target_value=X, product_type="chain"
-6. ลูกค้าพูดคำต่อไปนี้ → เรียก get_product_datasheet ทันที ห้ามตอบข้อความล้วน:
+6. ลูกค้าพูดคำต่อไปนี้ → เรียก generate_datasheet ทันที ห้ามตอบข้อความล้วน:
    - "ขอ drawing" / "drawing หน่อย" / "แสดง drawing"
    - "ขอ datasheet" / "datasheet หน่อย"
    - "ขอรูป" / "ดูรูป" / "แสดงรูป" / "รูปสินค้า"
@@ -923,22 +923,34 @@ def chat_interaction(
 
         # safe-access: response.text throws ValueError เมื่อ Gemini ส่งแค่ tool call
         # โดยไม่มี text part (finish_reason=STOP แต่ parts ว่าง)
-        try:
-            ai_reply = response.text
-        except ValueError:
-            ai_reply = ""
+        def _extract_text(resp):
             try:
-                for part in response.candidates[0].content.parts:
+                return resp.text
+            except ValueError:
+                pass
+            try:
+                for part in resp.candidates[0].content.parts:
                     if hasattr(part, "text") and part.text:
-                        ai_reply += part.text
+                        return part.text
             except Exception:
                 pass
-            if not ai_reply:
-                ai_reply = "ขออภัยครับ ระบบไม่สามารถสร้างคำตอบได้ในขณะนี้ กรุณาลองถามใหม่อีกครั้ง"
+            return ""
+
+        ai_reply = _extract_text(response)
+
+        # retry ครั้งเดียว ถ้า Gemini return empty response และยังไม่มี tool call
+        if not ai_reply and not _tool_call_log:
+            print("[WARN] Gemini returned empty response — retrying once")
+            response = chat_session.send_message("กรุณาดำเนินการตามที่ลูกค้าขอครับ")
+            ai_reply = _extract_text(response)
+
+        if not ai_reply:
+            ai_reply = "ขออภัยครับ ระบบไม่สามารถสร้างคำตอบได้ในขณะนี้ กรุณาลองถามใหม่อีกครั้ง"
 
         # ── Inject datasheet images ──────────────────────────────────
         # generate_datasheet stores PNG in _datasheet_cache[resolved_pid]
         # _tool_call_log already has the call recorded by _tracked
+        datasheet_b64_list = []
         for tc in _tool_call_log:
             if tc["tool_name"] == "generate_datasheet" and tc["success"]:
                 req = tc["args"].get("product_id", "").strip()
@@ -949,15 +961,18 @@ def chat_interaction(
                             b64 = v
                             break
                 if b64:
-                    ai_reply += (
-                        '\n\n<img src="data:image/png;base64,' + b64 +
-                        '" style="max-width:100%;border-radius:8px;'
-                        'box-shadow:0 2px 8px rgba(0,0,0,.15);margin:8px 0;" />'
-                    )
+                    datasheet_b64_list.append(b64)
+
+        # ถ้า Gemini ไม่ generate text หลัง tool call แต่ datasheet สำเร็จ
+        # ให้ใช้ default reply แทน error message
+        if datasheet_b64_list and ai_reply == "ขออภัยครับ ระบบไม่สามารถสร้างคำตอบได้ในขณะนี้ กรุณาลองถามใหม่อีกครั้ง":
+            pid_label = _tool_call_log[-1]["args"].get("product_id", "")
+            ai_reply = f"นี่คือ datasheet ของ **{pid_label}** ครับ"
 
     except Exception as e:
         ai_reply  = f"❌ เกิดข้อผิดพลาด: {str(e)}"
         error_msg = str(e)
+        datasheet_b64_list = []
         print(f"[ERROR] {e}")
         import traceback; traceback.print_exc()
 
@@ -967,6 +982,16 @@ def chat_interaction(
         {"role": "user",      "content": display_content},
         {"role": "assistant", "content": ai_reply},
     ]
+    # แยก datasheet image ออกเป็น message ต่างหาก (frontend รับ text/image แยกกันได้)
+    for b64 in datasheet_b64_list:
+        chat_history.append({
+            "role": "assistant",
+            "content": (
+                '<img src="data:image/png;base64,' + b64 +
+                '" style="max-width:100%;border-radius:8px;'
+                'box-shadow:0 2px 8px rgba(0,0,0,.15);margin:8px 0;" />'
+            ),
+        })
 
     # ── Extract pids จาก reply + reranked products ──────────
     # collect จาก 2 แหล่ง: ai_reply + reranked top products
