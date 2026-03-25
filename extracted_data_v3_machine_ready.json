@@ -67,19 +67,8 @@
             "search_content": "movex_chain_lf820_k400 lf 820 k400 820 series width 101.6mm lf designed for medium-sized containers like 1.0l - 1.5l bottles, milk cartons (tetra pak), and aerosol cans requiring extra stability. provides 23% more surface area than k325, reducing tipping risk for taller containers. requires compatible 100mm+ guide rail spacing. straight running only. compatible with krones labeler, sidel filler, khs innofill, rotary filler, bottle washer, glass bottle conveyor, pet line",
             "images": [
                 {
-                    "image_path": "image/movex_LF820_photo_top.PNG",
-                    "type": "photo",
-                    "description": "Top view of Movex 820 series straight running conveyor chain. Features a flat, smooth top plate surface made of LF (Low Friction) acetal resin. Showing the characteristic hinge joints and uniform gaps between links. No side tabs or wings are visible, confirming it is a straight-running design. Ideal for stable bottle and container conveying."
-                },
-                {
-                    "image_path": "image/movex_LF820_photo_back.PNG",
-                    "type": "photo",
-                    "description": "Underside view (back view) of Movex 820 series straight running chain. Showing the detailed hinge and pin assembly construction. The central drive pocket for sprocket engagement is clearly visible. This model features no side tabs or wings, indicating it is strictly for straight-line conveyors. The design emphasizes mechanical strength and easy cleaning access."
-                },
-                {
-                    "image_path": "image/movex_LF820_drawing.PNG",
-                    "type": "drawing",
-                    "description": "Technical engineering drawing of Movex 820 series straight running chain. The schematic shows precise dimensions including the standard 38.1mm (1.5 inch) pitch and plate thickness. It illustrates the side profile, top-down view, and cross-section of the hinge assembly. Key technical markers include the 50mm minimum backflex radius and plate width indicators. Clean black and white line art suitable for technical specification matching."
+                    "image_path": "image/movex_chain_LF820_K400/movex_LF820_drawing.PNG",
+                    "type": "drawing"
                 }
             ]
         },
@@ -98,19 +87,8 @@
             "search_content": "movex_chain_lf820_k450 lf 820 k450 820 series width 114.3mm lf optimized for large containers such as 2l soft drink bottles, 5-gallon jugs, or glass jars with wide bases. also used for small multi-packs. wide 114.3mm plate offers superior support for heavy or wide-base products. often used in parallel for wide belt replacements. higher friction contact area; consider lubrication for high loads. compatible with krones labeler, sidel filler, khs innofill, rotary filler, bottle washer, glass bottle conveyor, pet line",
             "images": [
                 {
-                    "image_path": "image/movex_LF820_photo_top.PNG",
-                    "type": "photo",
-                    "description": "Top view of Movex 820 series straight running conveyor chain. Features a flat, smooth top plate surface made of LF (Low Friction) acetal resin. Showing the characteristic hinge joints and uniform gaps between links. No side tabs or wings are visible, confirming it is a straight-running design. Ideal for stable bottle and container conveying."
-                },
-                {
-                    "image_path": "image/movex_LF820_photo_back.PNG",
-                    "type": "photo",
-                    "description": "Underside view (back view) of Movex 820 series straight running chain. Showing the detailed hinge and pin assembly construction. The central drive pocket for sprocket engagement is clearly visible. This model features no side tabs or wings, indicating it is strictly for straight-line conveyors. The design emphasizes mechanical strength and easy cleaning access."
-                },
-                {
-                    "image_path": "image/movex_LF820_drawing.PNG",
-                    "type": "drawing",
-                    "description": "Technical engineering drawing of Movex 820 series straight running chain. The schematic shows precise dimensions including the standard 38.1mm (1.5 inch) pitch and plate thickness. It illustrates the side profile, top-down view, and cross-section of the hinge assembly. Key technical markers include the 50mm minimum backflex radius and plate width indicators. Clean black and white line art suitable for technical specification matching."
+                    "image_path": "image/movex_chain_LF820_K450/movex_LF820_drawing.PNG",
+                    "type": "drawing"
                 }
             ]
         },
@@ -129,19 +107,8 @@
             "search_content": "movex_chain_lf820_k600 lf 820 k600 820 series width 152.4mm lf heavy-duty application for secondary packaging like cardboard boxes, shrink-wrapped 6-packs, and plastic trays. extra-wide 152.4mm surface prevents product overhang and ensures smooth transfer of non-cylindrical items. requires multiple wear strips for underside support due to width. compatible with krones labeler, sidel filler, khs innofill, rotary filler, bottle washer, glass bottle conveyor, pet line",
             "images": [
                 {
-                    "image_path": "image/movex_LF820_photo_top.PNG",
-                    "type": "photo",
-                    "description": "Top view of Movex 820 series straight running conveyor chain. Features a flat, smooth top plate surface made of LF (Low Friction) acetal resin. Showing the characteristic hinge joints and uniform gaps between links. No side tabs or wings are visible, confirming it is a straight-running design. Ideal for stable bottle and container conveying."
-                },
-                {
-                    "image_path": "image/movex_LF820_photo_back.PNG",
-                    "type": "photo",
-                    "description": "Underside view (back view) of Movex 820 series straight running chain. Showing the detailed hinge and pin assembly construction. The central drive pocket for sprocket engagement is clearly visible. This model features no side tabs or wings, indicating it is strictly for straight-line conveyors. The design emphasizes mechanical strength and easy cleaning access."
-                },
-                {
-                    "image_path": "image/movex_LF820_drawing.PNG",
-                    "type": "drawing",
-                    "description": "Technical engineering drawing of Movex 820 series straight running chain. The schematic shows precise dimensions including the standard 38.1mm (1.5 inch) pitch and plate thickness. It illustrates the side profile, top-down view, and cross-section of the hinge assembly. Key technical markers include the 50mm minimum backflex radius and plate width indicators. Clean black and white line art suitable for technical specification matching."
+                    "image_path": "image/movex_chain_LF820_K600/movex_LF820_drawing.PNG",
+                    "type": "drawing"
                 }
             ]
         },
@@ -264,19 +231,8 @@
             "search_content": "movex_chain_lf821_k1000 lf 821 k1000 821 series width 254.0mm lf high-capacity straight conveying for wide and heavy items. ideal for large automotive assemblies, bulk chemical containers, and high-volume accumulation tables requiring a stable, wide-surface deck. wide 254 mm surface combined with high tensile strength (2,770 n). the double-hinge design ensures even load distribution across the pin, preventing plate deformation under heavy central loads. the 3.05 kg/m weight requires reinforced conveyor frames and high-quality wear strips (uhmw-pe) to manage energy consumption and friction. compatible with tetra pak cardboard packer, douglas case packer, kettner palletizer, crate conveyor, end of line system",
             "images": [
                 {
-                    "image_path": "image/movex_LF821_photo_top.PNG",
-                    "type": "photo",
-                    "description": "Top view of Movex 821 series. Features double hinge construction for heavy-duty straight running. Smooth flat surface, no side tabs. Ideal for wide and heavy container conveying."
-                },
-                {
-                    "image_path": "image/movex_LF821_photo_back.PNG",
-                    "type": "photo",
-                    "description": "Underside of 821 series showing double hinge and pin construction. Built for heavy-duty straight running applications. No side tabs. Focus on robust hinge pockets for sprocket engagement."
-                },
-                {
-                    "image_path": "image/movex_LF821_drawing.PNG",
-                    "type": "drawing",
-                    "description": "Technical drawing of 821 series showing double hinge construction and reinforced pin assembly. Detailed dimensions for 38.1mm pitch and plate thickness. Designed for heavy-duty applications with high working load requirements."
+                    "image_path": "image/movex_chain_LF821_K1000/movex_LF821_drawing.PNG",
+                    "type": "drawing"
                 }
             ]
         },
@@ -295,19 +251,8 @@
             "search_content": "movex_chain_lf821_k1200 lf 821 k1200 821 series width 304.8mm lf maximum-width heavy-duty conveying for industrial bulk handling. optimized for the largest footprints in the series, such as industrial pallets, large machinery parts, or wide mass-flow accumulation zones. maximum available width of 304.8 mm (12 inches) with the robust 821 series double-hinge platform. offers the highest surface stability while maintaining a massive 2,770 n working load capacity. heaviest model in the series (3.35 kg/m). not recommended for high-speed operation due to high mass inertia; best suited for low-to-medium speed, high-torque lines. compatible with tetra pak cardboard packer, douglas case packer, kettner palletizer, crate conveyor, end of line system",
             "images": [
                 {
-                    "image_path": "image/movex_LF821_photo_top.PNG",
-                    "type": "photo",
-                    "description": "Top view of Movex 821 series. Features double hinge construction for heavy-duty straight running. Smooth flat surface, no side tabs. Ideal for wide and heavy container conveying."
-                },
-                {
-                    "image_path": "image/movex_LF821_photo_back.PNG",
-                    "type": "photo",
-                    "description": "Underside of 821 series showing double hinge and pin construction. Built for heavy-duty straight running applications. No side tabs. Focus on robust hinge pockets for sprocket engagement."
-                },
-                {
-                    "image_path": "image/movex_LF821_drawing.PNG",
-                    "type": "drawing",
-                    "description": "Technical drawing of 821 series showing double hinge construction and reinforced pin assembly. Detailed dimensions for 38.1mm pitch and plate thickness. Designed for heavy-duty applications with high working load requirements."
+                    "image_path": "image/movex_chain_LF821_K1200/movex_LF821_drawing.PNG",
+                    "type": "drawing"
                 }
             ]
         },
@@ -354,7 +299,7 @@
                     "image_path": "image/movex_chain_LF880_TAB_K325/movex_LF880_K325_photo_topcurve.jpeg",
                     "type": "photo"
                 },
-                 {
+                {
                     "image_path": "image/movex_chain_LF880_TAB_K325/movex_LF880_K325_photo_topflash.jpeg",
                     "type": "photo"
                 },
@@ -363,7 +308,7 @@
                     "type": "photo"
                 },
                 {
-                    "image_path": "image/movex_chain_LF880_TAB_K325/movex_LF821_drawing.PNG",
+                    "image_path": "image/movex_chain_LF880_TAB_K325/movex_LF880_drawing.PNG",
                     "type": "drawing"
                 }
             ]
@@ -411,7 +356,7 @@
                     "image_path": "image/movex_chain_LF880_TAB_K450/movex_LF880_K450_photo_topcurve.jpeg",
                     "type": "photo"
                 },
-                 {
+                {
                     "image_path": "image/movex_chain_LF880_TAB_K450/movex_LF880_K450_photo_topflash.jpeg",
                     "type": "photo"
                 },
@@ -420,7 +365,7 @@
                     "type": "photo"
                 },
                 {
-                    "image_path": "image/movex_chain_LF880_TAB_K450/movex_LF821_drawing.PNG",
+                    "image_path": "image/movex_chain_LF880_TAB_K450/movex_LF880_drawing.PNG",
                     "type": "drawing"
                 }
             ]
@@ -440,19 +385,8 @@
             "search_content": "movex_chain_lf882_tab_k750 lf 882 tab k750 882 series width 190.5mm lf heavy-duty curved conveying for industrial loads. standard choice for handling beer kegs, automotive batteries, and loaded plastic crates requiring a rugged side-flexing solution. offers superior tensile strength (3,830 n) for high-load loop layouts. reinforced hinge construction minimizes wear and elongation compared to standard 880 chains. minimum turning radius is 610 mm (wider than 880 series). requires heavy-duty 882 series sprockets and tracks. compatible with krones linaflex, crate washer, keg line, heavy duty case transport, spiral conveyor",
             "images": [
                 {
-                    "image_path": "image/movex_LF882_photo_top.PNG",
-                    "type": "photo",
-                    "description": "Top view of 882 series heavy-duty side-flexing chain. Thick plate design with rounded edges for high-load curved conveying. Smooth flat surface for stability."
-                },
-                {
-                    "image_path": "image/movex_LF882_photo_back.PNG",
-                    "type": "photo",
-                    "description": "Underside of 882 series heavy-duty side-flexing chain. Robust TAB wing system and reinforced hinge construction for high working loads. Designed for stability in extreme curved conveyor conditions."
-                },
-                {
-                    "image_path": "image/movex_LF882_drawing.PNG",
-                    "type": "drawing",
-                    "description": "Technical drawing for 882 series heavy-duty side-flexing chain. Highlights reinforced hinge design, thick plate geometry, and heavy-duty TAB wings. Includes 38.1mm pitch and side-flexing radius specifications for high-load conveyor engineering."
+                    "image_path": "image/movex_chain_LF882_TAB_K750/movex_LF882_drawing.PNG",
+                    "type": "drawing"
                 }
             ]
         },
@@ -471,19 +405,8 @@
             "search_content": "movex_chain_lf882_tab_k1000 lf 882 tab k1000 882 series width 254.0mm lf wide-track heavy-duty conveying for large containers. ideal for chemical drums, jerry cans, and large secondary packaging boxes that need to navigate turns without transfers. 254 mm width provides excellent stability for top-heavy industrial containers in curves. robust tab design ensures secure track engagement under high side-loads. high chain weight (2.85 kg/m) increases friction. requires 610 mm radius curves and robust drive systems. compatible with krones linaflex, crate washer, keg line, heavy duty case transport, spiral conveyor",
             "images": [
                 {
-                    "image_path": "image/movex_LF882_photo_top.PNG",
-                    "type": "photo",
-                    "description": "Top view of 882 series heavy-duty side-flexing chain. Thick plate design with rounded edges for high-load curved conveying. Smooth flat surface for stability."
-                },
-                {
-                    "image_path": "image/movex_LF882_photo_back.PNG",
-                    "type": "photo",
-                    "description": "Underside of 882 series heavy-duty side-flexing chain. Robust TAB wing system and reinforced hinge construction for high working loads. Designed for stability in extreme curved conveyor conditions."
-                },
-                {
-                    "image_path": "image/movex_LF882_drawing.PNG",
-                    "type": "drawing",
-                    "description": "Technical drawing for 882 series heavy-duty side-flexing chain. Highlights reinforced hinge design, thick plate geometry, and heavy-duty TAB wings. Includes 38.1mm pitch and side-flexing radius specifications for high-load conveyor engineering."
+                    "image_path": "image/movex_chain_LF882_TAB_K1000/movex_LF882_drawing.PNG",
+                    "type": "drawing"
                 }
             ]
         },
@@ -502,19 +425,8 @@
             "search_content": "movex_chain_lf882_tab_k1200 lf 882 tab k1200 882 series width 304.8mm lf maximum-width side-flexing for bulk accumulation. specialized for mass-flow layouts handling heavy volumes of glass or pet bottles, allowing for wide accumulation zones with curved returns. widest side-flexing option (304.8 mm). enables the design of high-capacity accumulation tables with fewer chain strands while maintaining high load capacity. heaviest option (3.40 kg/m) with significant inertial mass. not suitable for high-speed start-stop applications. requires lubrication in curves. compatible with krones linaflex, crate washer, keg line, heavy duty case transport, spiral conveyor",
             "images": [
                 {
-                    "image_path": "image/movex_LF882_photo_top.PNG",
-                    "type": "photo",
-                    "description": "Top view of 882 series heavy-duty side-flexing chain. Thick plate design with rounded edges for high-load curved conveying. Smooth flat surface for stability."
-                },
-                {
-                    "image_path": "image/movex_LF882_photo_back.PNG",
-                    "type": "photo",
-                    "description": "Underside of 882 series heavy-duty side-flexing chain. Robust TAB wing system and reinforced hinge construction for high working loads. Designed for stability in extreme curved conveyor conditions."
-                },
-                {
-                    "image_path": "image/movex_LF882_drawing.PNG",
-                    "type": "drawing",
-                    "description": "Technical drawing for 882 series heavy-duty side-flexing chain. Highlights reinforced hinge design, thick plate geometry, and heavy-duty TAB wings. Includes 38.1mm pitch and side-flexing radius specifications for high-load conveyor engineering."
+                    "image_path": "image/movex_chain_LF882_TAB_K1200/movex_LF882_drawing.PNG",
+                    "type": "drawing"
                 }
             ]
         },
@@ -535,7 +447,7 @@
             "Material": "LFN",
             "Pivot_material": "MX White",
             "search_content": "movex_chain_lfn_83_mfm lfn 83 mfm 83 mfm pro series width 83.0mm lfn premium high-speed conveying for bottling lines utilizing magnetic curve tracks. optimized for maximum efficiency in transporting standard beverage containers (pet/glass) with minimal noise and vibration. short 33.5 mm pitch ensures ultra-smooth operation at high speeds. the magnetic system design removes the need for hold-down tabs, creating a hygienic, easy-to-clean surface ideal for food safety compliance. requires magnetic corner tracks. 33.5 mm pitch is not compatible with standard 38.1 mm sprockets or chains. upgrade for high speed krones modul, sidel matrix, magnetic system conveyor, khs innoline (high speed)",
-             "images": [
+            "images": [
                 {
                     "image_path": "image/movex_chain_LFN_83_MFM/movex_LFN 83 MFM_photo_back.jpeg",
                     "type": "photo"
@@ -564,7 +476,7 @@
                     "image_path": "image/movex_chain_LFN_83_MFM/movex_LFN 83 MFM_photo_topcurve.jpeg",
                     "type": "photo"
                 },
-                 {
+                {
                     "image_path": "image/movex_chain_LFN_83_MFM/movex_LFN 83 MFM_photo_topflash.jpeg",
                     "type": "photo"
                 },
@@ -624,7 +536,7 @@
                     "image_path": "image/movex_chain_LFN_103_MFH/movex_LFN 103 MFH_photo_topbadlight.jpeg",
                     "type": "photo"
                 },
-                 {
+                {
                     "image_path": "image/movex_chain_LFN_103_MFH/movex_LFN 103 MFH_photo_topcurve.jpeg",
                     "type": "photo"
                 },
@@ -658,14 +570,8 @@
             "search_content": "movex_sprocket_58801  83 mfm pro width mm polyamide used as a main drive component for 83 mfm pro sideflexing chains in high-speed bottling and packaging lines. machined from high-grade polyamide, includes stainless steel screws and zinc plated steel nuts, precision tooth profile for reduced vibration. strictly compatible with 83 mfm pro series only. not interchangeable with standard 83 m series.",
             "images": [
                 {
-                    "image_path": "image/movex_sporcket83MFM_photo.PNG",
-                    "type": "photo",
-                    "description": "Machined drive sprocket for 83 MFM PRO series. Optimized tooth profile for 33.5mm pitch. High-precision engagement for high-speed conveyor systems. Available in various tooth counts like Z-12."
-                },
-                {
-                    "image_path": "image/movex_sporcket83MFM_drawing.PNG",
-                    "type": "drawing",
-                    "description": "Technical drawing for 83 MFM PRO sprocket. Highlights 33.5mm pitch tooth profile, diameter measurements (De, Dp), and bore sizing for shaft mounting. Provides critical dimensions for conveyor drive-end assembly."
+                    "image_path": "image/movex_sprocket_58801/movex_sporcket83MFM_drawing.PNG",
+                    "type": "drawing"
                 }
             ]
         },
@@ -712,7 +618,7 @@
                     "image_path": "image/movex_sprocket_57801/movex_sporcket103MFH_photo_6.jpeg",
                     "type": "photo"
                 },
-                 {
+                {
                     "image_path": "image/movex_sprocket_57801/movex_sporcket103MFH_photo_7.jpeg",
                     "type": "photo"
                 },
@@ -769,7 +675,7 @@
                     "image_path": "image/movex_sprocket_54201/movex_sprocket820_photo5.jpeg",
                     "type": "photo"
                 },
-                 {
+                {
                     "image_path": "image/movex_sprocket_54201/movex_sprocket820_photo6.jpeg",
                     "type": "photo"
                 },
@@ -803,14 +709,8 @@
             "search_content": "movex_sprocket_54301  820 series width mm polyamide primary drive or idler component for straight running conveyor systems. widely used in general food and beverage packaging lines. manufactured from reinforced polyamide (black); cost-effective solution for high-volume production; robust design for standard industrial environments. standard precision levels; not recommended for extremely high-speed lines where noise reduction is critical. compatible with krones labeler, sidel filler, khs innofill, rotary filler, bottle washer, glass bottle conveyor, pet line",
             "images": [
                 {
-                    "image_path": "image/movex_sprocket820_photo.PNG",
-                    "type": "photo",
-                    "description": "Drive sprocket for 820 series straight-running chains. Standard 38.1mm pitch. Features a durable tooth profile for single-hinge engagement. Available in various bore sizes for standard conveyor shafts."
-                },
-                {
-                    "image_path": "image/movex_sprocket820_drawing.PNG",
-                    "type": "drawing",
-                    "description": "Technical drawing for 820 series sprocket. Highlights standard 38.1mm pitch tooth profile, diameter measurements (De, Dp), and hub dimensions. Provides essential engineering data for shaft mounting and drive-end clearances."
+                    "image_path": "image/movex_sprocket_54301/movex_sprocket820_drawing.PNG",
+                    "type": "drawing"
                 }
             ]
         },
@@ -834,14 +734,8 @@
             "search_content": "movex_sprocket_54401  820 series width mm polyamide primary drive or idler component for straight running conveyor systems. widely used in general food and beverage packaging lines. manufactured from reinforced polyamide (black); cost-effective solution for high-volume production; robust design for standard industrial environments. standard precision levels; not recommended for extremely high-speed lines where noise reduction is critical. compatible with krones labeler, sidel filler, khs innofill, rotary filler, bottle washer, glass bottle conveyor, pet line",
             "images": [
                 {
-                    "image_path": "image/movex_sprocket820_photo.PNG",
-                    "type": "photo",
-                    "description": "Drive sprocket for 820 series straight-running chains. Standard 38.1mm pitch. Features a durable tooth profile for single-hinge engagement. Available in various bore sizes for standard conveyor shafts."
-                },
-                {
-                    "image_path": "image/movex_sprocket820_drawing.PNG",
-                    "type": "drawing",
-                    "description": "Technical drawing for 820 series sprocket. Highlights standard 38.1mm pitch tooth profile, diameter measurements (De, Dp), and hub dimensions. Provides essential engineering data for shaft mounting and drive-end clearances."
+                    "image_path": "image/movex_sprocket_54401/movex_sprocket820_drawing.PNG",
+                    "type": "drawing"
                 }
             ]
         },
@@ -888,12 +782,8 @@
                     "image_path": "image/movex_sprocket_54901/movex_sprocket880_photo5.jpeg",
                     "type": "photo"
                 },
-                 {
-                    "image_path": "image/movex_sprocket_54901/movex_sprocket880_photo6.jpeg",
-                    "type": "photo"
-                },
                 {
-                    "image_path": "image/movex_sprocket_54901/movex_sprocket880_photo7.jpeg",
+                    "image_path": "image/movex_sprocket_54901/movex_sprocket880_photo6.jpeg",
                     "type": "photo"
                 },
                 {
@@ -922,14 +812,8 @@
             "search_content": "movex_sprocket_55001  880 series width mm polyamide specifically designed for sideflexing (curved) conveyor systems that require compact layouts. optimized tooth profile to engage with tab or bevel retention systems of the 880 series; provides stable chain tracking through curves. must ensure proper alignment of the curve tracks with the sprocket position to prevent chain pulsation. compatible with krones synco, sidel gebo, distribution line, accumulation table, curved layout machine",
             "images": [
                 {
-                    "image_path": "image/movex_sprocket880_photo.PNG",
-                    "type": "photo",
-                    "description": "Drive sprocket for 880 series side-flexing chains. Standard 38.1mm pitch. Optimized tooth geometry for smooth engagement during straight and curved conveying. Available in various tooth counts and bore sizes."
-                },
-                {
-                    "image_path": "image/movex_sprocket880_drawing.PNG",
-                    "type": "drawing",
-                    "description": "Technical drawing for 880 series sprocket. Highlights standard 38.1mm pitch, tooth geometry, and diameter measurements (De, Dp). Provides engineering data for shaft mounting and alignment in side-flexing conveyor systems."
+                    "image_path": "image/movex_sprocket_55001/movex_sprocket880_drawing.PNG",
+                    "type": "drawing"
                 }
             ]
         },
@@ -953,14 +837,8 @@
             "search_content": "movex_sprocket_55601  882 series width mm polyamide designed for high-load sideflexing applications, such as glass bottle handling or heavy crate conveying. wide tooth face to accommodate the higher tensile strength of the 882 series; reinforced structure to handle high torque transmission. requires higher torque from the drive motor; ensure the shaft diameter is sufficient for heavy-duty loads. compatible with krones linaflex, crate washer, keg line, heavy duty case transport, spiral conveyor",
             "images": [
                 {
-                    "image_path": "image/movex_sprocket882_photo.PNG",
-                    "type": "photo",
-                    "description": "Heavy-duty drive sprocket for 882 series side-flexing chains. Features a reinforced tooth profile and wider hub for 38.1mm pitch. Engineered for high-torque and high-load curved conveyor applications."
-                },
-                {
-                    "image_path": "image/movex_sprocket882_drawing.PNG",
-                    "type": "drawing",
-                    "description": "Technical drawing for 882 series heavy-duty sprocket. Highlights 38.1mm pitch with reinforced tooth width. Includes diameter measurements (De, Dp) and hub dimensions. Crucial for heavy-load conveyor drive-end engineering."
+                    "image_path": "image/movex_sprocket_55601/movex_sprocket882_drawing.PNG",
+                    "type": "drawing"
                 }
             ]
         }

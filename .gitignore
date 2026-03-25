@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 node_modules
 
 # Output
@@ -7,10 +8,31 @@ node_modules
 .wrangler
 /.svelte-kit
 /build
+=======
+# Environment
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+logs/
+*.log
+logs.zip
+
+# Database
+qdrant_db/
+
+# Gradio cache
+.gradio/
+>>>>>>> main
 
 # OS
 .DS_Store
 Thumbs.db
+<<<<<<< HEAD
 
 # Env
 .env
@@ -21,3 +43,5 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+=======
+>>>>>>> main

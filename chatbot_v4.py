@@ -15,7 +15,7 @@ Movex Sales AI Assistant v4 — Adaptive Multi-Signal Pipeline
 import os, json, re, base64, csv, torch, time
 from io import BytesIO
 from datetime import datetime
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -257,6 +257,7 @@ retriever = InstrumentedRetriever(_retriever_inner)
 # ================================================================
 
 _tool_call_log: list[dict] = []
+_datasheet_cache: dict[str, str] = {}   # resolved_pid -> base64 PNG
 
 def _tracked(fn):
     import inspect
@@ -437,9 +438,150 @@ def filter_product_specs(
     return f"พบ {len(matched)} รุ่น ได้แก่: {', '.join(matched)}"
 
 
-tracked_analyze = _tracked(analyze_product_database)
-tracked_compare = _tracked(compare_specific_products)
-tracked_filter  = _tracked(filter_product_specs)
+def generate_datasheet(product_id: str) -> str:
+    """
+    สร้าง datasheet PNG (drawing + spec table) สำหรับสินค้า Movex แล้วส่งให้ลูกค้า
+    ใช้ทันทีเมื่อลูกค้าพูดว่า "ขอ drawing" / "ขอ datasheet" / "ขอรูป" / "แสดงแบบ"
+
+    Parameters
+    ----------
+    product_id : รหัสสินค้า เช่น "movex_chain_LF820_K325", "LF820_K325", "54201"
+                 รองรับ fuzzy match — ใส่แค่บางส่วนก็ได้
+    """
+    pid = product_id.strip()
+    if pid not in product_db:
+        for k in product_db:
+            if pid.lower() in k.lower() or k.lower().endswith(pid.lower()):
+                pid = k
+                break
+    if pid not in product_db:
+        return f"ไม่พบสินค้า '{product_id}' ในระบบ กรุณาตรวจสอบรหัสสินค้า"
+
+    if pid in _datasheet_cache:
+        return f"ส่ง datasheet ของ {product_db[pid].get('Ref', pid)} แล้ว"
+
+    p = product_db[pid]
+
+    # ── หา drawing image ─────────────────────────────────────────────
+    drawing_img = None
+    for img_entry in p.get("images", []):
+        if img_entry.get("type") == "drawing":
+            img_path = img_entry["image_path"]
+            if os.path.exists(img_path):
+                drawing_img = Image.open(img_path).convert("RGB")
+                break
+
+    # ── Build spec rows ──────────────────────────────────────────────
+    # Ref: chain ใช้ "Ref", sprocket ใช้ "Art_Nr"
+    ref_val = p.get("Ref") or p.get("Art_Nr") or pid
+    spec_rows = [
+        ("Ref / Art.Nr", ref_val),
+        ("Series",       p.get("series", "-")),
+        ("Type",         p.get("product_type", "-")),
+    ]
+    for field, label in [
+        # --- Chain fields ---
+        ("Plate_Width_mm",      "Width (mm)"),
+        ("Weight_kg_m",         "Weight (kg/m)"),
+        ("Max_Working_Load_N",  "Max Load (N)"),
+        ("Material",            "Material"),
+        ("Min_curve_radius_mm", "Min Curve R (mm)"),
+        ("Pitch_mm",            "Pitch (mm)"),
+        # --- Sprocket fields ---
+        ("Sprocket_Type",       "Sprocket Type"),
+        ("manufacturing_process", "Process"),
+        ("Z_Teeth",             "Teeth (Z)"),
+        ("Bore_mm",             "Bore (mm)"),
+        ("PD_mm",               "PD (mm)"),
+        ("OD_mm",               "OD (mm)"),
+        ("S_mm",                "S (mm)"),
+        ("compatible_chain",    "Compatible Chain"),
+    ]:
+        val = p.get(field)
+        if val is not None:
+            spec_rows.append((label, str(val)))
+
+    # ── Canvas setup ─────────────────────────────────────────────────
+    W, H      = 920, 520
+    DW        = 460        # drawing section width
+    HEADER_H  = 52
+    FOOTER_H  = 24
+    PAD       = 18
+    ROW_H     = 26
+
+    canvas = Image.new("RGB", (W, H), (255, 255, 255))
+    draw   = ImageDraw.Draw(canvas)
+
+    def _font(size: int):
+        for path in [
+            "C:/Windows/Fonts/arial.ttf",
+            "C:/Windows/Fonts/calibri.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        ]:
+            try:
+                return ImageFont.truetype(path, size)
+            except Exception:
+                pass
+        return ImageFont.load_default()
+
+    f_brand = _font(20)
+    f_title = _font(16)
+    f_label = _font(13)
+    f_val   = _font(13)
+    f_foot  = _font(11)
+
+    # Header
+    draw.rectangle([0, 0, W, HEADER_H], fill=(20, 50, 100))
+    draw.text((PAD, 9),  "MOVEX", fill=(255, 200, 0),   font=f_brand)
+    draw.text((94, 16),  f"Product Datasheet — {p.get('Ref', pid)}",
+              fill=(255, 255, 255), font=f_title)
+
+    # Drawing area
+    draw.rectangle([0, HEADER_H, DW, H - FOOTER_H], fill=(248, 248, 250))
+    if drawing_img:
+        max_w = DW - 2 * PAD
+        max_h = H - HEADER_H - FOOTER_H - 2 * PAD
+        drawing_img.thumbnail((max_w, max_h), Image.LANCZOS)
+        dx = PAD + (max_w - drawing_img.width) // 2
+        dy = HEADER_H + PAD + (max_h - drawing_img.height) // 2
+        canvas.paste(drawing_img, (dx, dy))
+    else:
+        draw.text((PAD, HEADER_H + PAD), "No drawing available",
+                  fill=(180, 180, 180), font=f_label)
+
+    # Divider
+    draw.line([(DW, HEADER_H), (DW, H - FOOTER_H)], fill=(180, 180, 180), width=1)
+
+    # Spec table
+    sx = DW + PAD
+    y  = HEADER_H + PAD
+    for i, (label, value) in enumerate(spec_rows):
+        if y + ROW_H > H - FOOTER_H - PAD:
+            break
+        row_bg = (240, 245, 255) if i % 2 == 0 else (255, 255, 255)
+        draw.rectangle([sx - 4, y - 2, W - 4, y + ROW_H - 6], fill=row_bg)
+        draw.text((sx,       y), label + ":", fill=(50, 80, 130),  font=f_label)
+        draw.text((sx + 155, y), value,       fill=(20, 20, 20),   font=f_val)
+        y += ROW_H
+
+    # Footer
+    draw.rectangle([0, H - FOOTER_H, W, H], fill=(20, 50, 100))
+    draw.text((PAD, H - FOOTER_H + 5),
+              "Movex — Industrial Chain & Conveyor Solutions",
+              fill=(180, 200, 230), font=f_foot)
+
+    # Encode
+    buf = BytesIO()
+    canvas.save(buf, format="PNG", optimize=True)
+    _datasheet_cache[pid] = base64.b64encode(buf.getvalue()).decode("utf-8")
+
+    return f"สร้าง datasheet ของ {p.get('Ref', pid)} สำเร็จแล้ว"
+
+
+tracked_analyze   = _tracked(analyze_product_database)
+tracked_compare   = _tracked(compare_specific_products)
+tracked_filter    = _tracked(filter_product_specs)
+tracked_datasheet = _tracked(generate_datasheet)
 
 
 # ================================================================
@@ -545,6 +687,13 @@ def _build_system_prompt(json_context: str, graph_summary: str,vit_signal=None) 
    - "รับโหลดสูงสุด / แข็งแรงสุด"             → spec_type="load",   condition=">=", target_value=0, sort_by="load",   sort_order="desc"
    - "กว้างสุด / กว้างมากสุด"                  → spec_type="width",  condition=">=", target_value=0, sort_by="width",  sort_order="desc"
    - "width ≥ X / กว้างอย่างน้อย X mm"         → spec_type="width",  condition=">=", target_value=X, product_type="chain"
+6. ลูกค้าพูดคำต่อไปนี้ → เรียก generate_datasheet ทันที ห้ามตอบข้อความล้วน:
+   - "ขอ drawing" / "drawing หน่อย" / "แสดง drawing"
+   - "ขอ datasheet" / "datasheet หน่อย"
+   - "ขอรูป" / "ดูรูป" / "แสดงรูป" / "รูปสินค้า"
+   - "แบบ" / "แสดงแบบ" / "ขอดูแบบ"
+   → ใช้ product_id ของ rank 1 ใน RAG Context หรือ product ที่ลูกค้าพูดถึง
+   → หลังจากแสดง datasheet แล้ว บอก spec สั้นๆ ด้วย
 """
 
 
@@ -706,7 +855,8 @@ def chat_interaction(
                 {"role": "user",      "content": display_content},
                 {"role": "assistant", "content": ai_reply},
             ]
-            return chat_history, chat_history, raw_refs_html, last_pid, session_id
+            return (chat_history, chat_history, raw_refs_html,
+                    last_pids, session_id, last_vit_signal, last_graph_result)
 
         # ════════════════════════════════════════════════════
         # PHASE 4: Rank — Keyword Boost + Final Sort
@@ -762,7 +912,7 @@ def chat_interaction(
         model_chat = genai.GenerativeModel(
             model_name=GEMINI_MODEL,
             system_instruction=system_instruction,
-            tools=[tracked_analyze, tracked_compare, tracked_filter],
+            tools=[tracked_analyze, tracked_compare, tracked_filter, tracked_datasheet],
         )
         chat_session = model_chat.start_chat(
             history=gemini_history,
@@ -770,11 +920,59 @@ def chat_interaction(
         )
         prompt   = user_text.strip() or "ลูกค้าส่งรูปภาพมา ช่วยวิเคราะห์สเปกจาก RAG Context"
         response = chat_session.send_message([img_part, prompt] if img_part else [prompt])
-        ai_reply = response.text
+
+        # safe-access: response.text throws ValueError เมื่อ Gemini ส่งแค่ tool call
+        # โดยไม่มี text part (finish_reason=STOP แต่ parts ว่าง)
+        def _extract_text(resp):
+            try:
+                return resp.text
+            except ValueError:
+                pass
+            try:
+                for part in resp.candidates[0].content.parts:
+                    if hasattr(part, "text") and part.text:
+                        return part.text
+            except Exception:
+                pass
+            return ""
+
+        ai_reply = _extract_text(response)
+
+        # retry ครั้งเดียว ถ้า Gemini return empty response และยังไม่มี tool call
+        if not ai_reply and not _tool_call_log:
+            print("[WARN] Gemini returned empty response — retrying once")
+            response = chat_session.send_message("กรุณาดำเนินการตามที่ลูกค้าขอครับ")
+            ai_reply = _extract_text(response)
+
+        if not ai_reply:
+            ai_reply = "ขออภัยครับ ระบบไม่สามารถสร้างคำตอบได้ในขณะนี้ กรุณาลองถามใหม่อีกครั้ง"
+
+        # ── Inject datasheet images ──────────────────────────────────
+        # generate_datasheet stores PNG in _datasheet_cache[resolved_pid]
+        # _tool_call_log already has the call recorded by _tracked
+        datasheet_b64_list = []
+        for tc in _tool_call_log:
+            if tc["tool_name"] == "generate_datasheet" and tc["success"]:
+                req = tc["args"].get("product_id", "").strip()
+                b64 = _datasheet_cache.get(req)
+                if not b64:
+                    for k, v in _datasheet_cache.items():
+                        if req.lower() in k.lower() or k.lower().endswith(req.lower()):
+                            b64 = v
+                            break
+                if b64:
+                    datasheet_b64_list.append(b64)
+
+        # ถ้า Gemini ไม่ generate text หลัง tool call แต่ datasheet สำเร็จ
+        # ให้ใช้ default reply แทน error message
+        if datasheet_b64_list and ai_reply == "ขออภัยครับ ระบบไม่สามารถสร้างคำตอบได้ในขณะนี้ กรุณาลองถามใหม่อีกครั้ง":
+            pid_label = _tool_call_log[-1]["args"].get("product_id", "")
+            ai_reply = f"นี่คือ datasheet ของ **{pid_label}** ครับ"
 
     except Exception as e:
         ai_reply  = f"❌ เกิดข้อผิดพลาด: {str(e)}"
         error_msg = str(e)
+        datasheet_b64_list = []
         print(f"[ERROR] {e}")
         import traceback; traceback.print_exc()
 
@@ -784,6 +982,16 @@ def chat_interaction(
         {"role": "user",      "content": display_content},
         {"role": "assistant", "content": ai_reply},
     ]
+    # แยก datasheet image ออกเป็น message ต่างหาก (frontend รับ text/image แยกกันได้)
+    for b64 in datasheet_b64_list:
+        chat_history.append({
+            "role": "assistant",
+            "content": (
+                '<img src="data:image/png;base64,' + b64 +
+                '" style="max-width:100%;border-radius:8px;'
+                'box-shadow:0 2px 8px rgba(0,0,0,.15);margin:8px 0;" />'
+            ),
+        })
 
     # ── Extract pids จาก reply + reranked products ──────────
     # collect จาก 2 แหล่ง: ai_reply + reranked top products
@@ -916,7 +1124,7 @@ with gr.Blocks(css=css, js=js_code, title="Movex Sales AI Assistant v4") as demo
     ).then(fn=reset_inputs, outputs=[img_input_ui, txt_input])
 
     clear_btn.click(
-        fn=lambda: ([], [], "", [], "", None, None, logger.new_session()),
+        fn=lambda: ([], [], "", [], logger.new_session(), None, None),
         inputs=None,
         outputs=[chatbot_ui, chat_state, raw_refs,
                  last_pids_state, session_state, last_vit_state, last_graph_state],
