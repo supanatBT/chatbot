@@ -11,8 +11,8 @@
 </script>
 
 <header
-  class="h-14 flex items-center justify-between px-5 flex-shrink-0
-         border-b border-black/[.08] dark:border-white/[.06]
+  class="h-14 flex items-center justify-between px-5 shrink-0
+         border-b border-black/8 dark:border-white/6
          bg-white/80 dark:bg-[#09090d]/80 backdrop-blur-xl"
 >
   <div class="flex items-center gap-3">
@@ -21,7 +21,7 @@
       class="w-8 h-8 rounded-lg flex items-center justify-center
              text-black/30 dark:text-white/30
              hover:text-black/70 dark:hover:text-white/80
-             hover:bg-black/[.05] dark:hover:bg-white/[.05] transition-all"
+             hover:bg-black/5 dark:hover:bg-white/5 transition-all"
       title="Toggle sidebar"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -41,15 +41,13 @@
   </div>
 
   <div class="flex items-center gap-3">
-    <span class="mono text-[10px] tracking-widest text-black/25 dark:text-white/20 uppercase">Gemini</span>
-
     <button
       onclick={onToggleTheme}
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       class="w-8 h-8 rounded-lg flex items-center justify-center
              text-black/40 dark:text-white/40
              hover:text-black/80 dark:hover:text-white/80
-             hover:bg-black/[.05] dark:hover:bg-white/[.05] transition-all"
+             hover:bg-black/5 dark:hover:bg-white/5 transition-all"
     >
       {#if isDark}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

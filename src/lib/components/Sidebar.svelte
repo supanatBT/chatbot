@@ -15,14 +15,14 @@
 </script>
 
 <aside
-  class="flex flex-col flex-shrink-0
-         border-r border-black/[.08] dark:border-white/[.06]
+  class="flex flex-col shrink-0
+         border-r border-black/8 dark:border-white/6
          bg-gray-50 dark:bg-[#0f0f14]
          transition-all duration-300 overflow-hidden"
   style="width: {open ? '248px' : '0px'}"
 >
   <!-- Header -->
-  <div class="flex items-center justify-between px-4 py-4 border-b border-black/[.06] dark:border-white/[.06]">
+  <div class="flex items-center justify-between px-4 py-4 border-b border-black/6 dark:border-white/6">
     <span class="mono text-[10px] tracking-[.14em] uppercase text-zinc-800 dark:text-white">History</span>
     <button
       onclick={onNewChat}
