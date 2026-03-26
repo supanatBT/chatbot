@@ -11,6 +11,8 @@
 
   let { messages, isLoading, el = $bindable(), onRegenerate, onCopy }: Props = $props();
 
+  let selectedImage: string | null = $state(null);
+
   function formatTime(timestamp?: number): string {
     if (!timestamp) return '';
     const date = new Date(timestamp);
@@ -33,6 +35,22 @@
 
   function isImageContent(content: string): boolean {
     return content.startsWith('<img');
+  }
+
+  function extractImageSrc(htmlContent: string): string | null {
+    const match = htmlContent.match(/src="([^"]+)"/);
+    return match ? match[1] : null;
+  }
+
+  function openImageModal(htmlContent: string) {
+    const src = extractImageSrc(htmlContent);
+    if (src) {
+      selectedImage = src;
+    }
+  }
+
+  function closeImageModal() {
+    selectedImage = null;
   }
 </script>
 
@@ -70,9 +88,14 @@
               
               <!-- Render image content -->
               {#if isImageContent(msg.content)}
-                <div class="rounded-2xl rounded-tl-sm overflow-hidden shadow-sm border border-black/7 dark:border-white/6">
+                <button
+                  onclick={() => openImageModal(msg.content)}
+                  class="cursor-pointer rounded-2xl rounded-tl-sm overflow-hidden shadow-sm border border-black/7 dark:border-white/6
+                         hover:shadow-lg hover:border-violet-400 dark:hover:border-violet-500 transition-all"
+                  title="Click to view full size"
+                >
                   {@html msg.content}
-                </div>
+                </button>
               <!-- Render text content -->
               {:else}
                 <div class="border rounded-2xl rounded-tl-sm px-4 py-3 text-[14px] leading-relaxed msg-bubble shadow-sm
@@ -117,3 +140,51 @@
     {/each}
   </div>
 </div>
+
+<!-- Image Modal -->
+{#if selectedImage}
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+    onclick={closeImageModal}
+    role="button"
+    tabindex="0"
+    onkeydown={(e) => e.key === 'Escape' && closeImageModal()}
+  >
+    <div
+      class="relative max-w-4xl max-h-[90vh] bg-white dark:bg-[#141419] rounded-2xl shadow-2xl overflow-hidden"
+      onclick={(e) => e.stopPropagation()}
+      role="dialog"
+    >
+      <!-- Close button -->
+      <button
+        onclick={closeImageModal}
+        class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 
+               text-white flex items-center justify-center transition-colors"
+        title="Close (Esc)"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Image -->
+      <img
+        src={selectedImage}
+        alt="Technical drawing"
+        class="w-full h-full object-contain"
+      />
+
+      <!-- Download button -->
+      <a
+        href={selectedImage}
+        download
+        class="absolute bottom-4 left-4 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-700 
+               text-white text-sm font-medium transition-colors"
+        onclick={(e) => e.stopPropagation()}
+      >
+        ⬇ Download
+      </a>
+    </div>
+  </div>
+{/if}

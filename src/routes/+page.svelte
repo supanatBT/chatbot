@@ -346,10 +346,10 @@
 <!-- ─── Fonts + global styles ─────────────────────────── -->
 <svelte:head>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    :root { font-family: 'Syne', sans-serif; }
-    .mono { font-family: 'Geist Mono', monospace; }
+    :root { font-family: 'IBM Plex Sans', sans-serif; }
+    .mono { font-family: 'IBM Plex Mono', monospace; }
     html, body { height: 100%; overflow: hidden; background: #f8f8fc; }
     html.dark, html.dark body { background: #09090d; }
     ::-webkit-scrollbar-thumb { background: #d0d0e0; border-radius: 3px; }

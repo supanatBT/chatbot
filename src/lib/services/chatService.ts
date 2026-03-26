@@ -69,8 +69,8 @@ export async function sendChatMessage(
     ]);
 
     console.log('✅ Response from Gradio:', {
-      dataLength: result.data?.length,
-      chatbotUiLength: result.data?.[0]?.length,
+      dataLength: (result.data as any[])?.length,
+      chatbotUiLength: ((result.data as any[])?.[0])?.length,
     });
 
     const [
