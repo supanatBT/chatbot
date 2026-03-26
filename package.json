@@ -24,5 +24,8 @@
 		"tailwindcss": "^4.1.18",
 		"typescript": "^5.9.3",
 		"vite": "^7.3.1"
+	},
+	"dependencies": {
+		"@gradio/client": "^2.1.0"
 	}
 }

@@ -30,6 +30,10 @@
     if (!prevMsg.timestamp || !currMsg.timestamp) return false;
     return Math.abs(currMsg.timestamp - prevMsg.timestamp) > 5 * 60 * 1000; // 5 minutes
   }
+
+  function isImageContent(content: string): boolean {
+    return content.startsWith('<img');
+  }
 </script>
 
 <div bind:this={el} class="flex-1 overflow-y-auto px-5 py-8">
@@ -63,19 +67,28 @@
                         bg-violet-50 hover:bg-violet-100 dark:bg-[#1a1a24] dark:hover:bg-[#212229] border border-violet-200 dark:border-white/8 transition-colors">✦</div>
             <div class="flex flex-col gap-1.5 flex-1 min-w-0">
               <span class="mono text-[9px] uppercase tracking-widest text-black/35 dark:text-white/25 font-medium">Assistant</span>
-              <div class="border rounded-2xl rounded-tl-sm px-4 py-3 text-[14px] leading-relaxed msg-bubble shadow-sm
-                          bg-white hover:bg-gray-50 dark:bg-[#141419] dark:hover:bg-[#18181e] border-black/7 dark:border-white/6
-                          text-black/80 dark:text-white/85 transition-colors">
-                {#if msg.content === '' && isLoading}
-                  <div class="flex gap-1.5 items-center py-1">
-                    <div class="dot-1 w-1.5 h-1.5 rounded-full bg-violet-400"></div>
-                    <div class="dot-2 w-1.5 h-1.5 rounded-full bg-violet-400"></div>
-                    <div class="dot-3 w-1.5 h-1.5 rounded-full bg-violet-400"></div>
-                  </div>
-                {:else}
-                  {msg.content}
-                {/if}
-              </div>
+              
+              <!-- Render image content -->
+              {#if isImageContent(msg.content)}
+                <div class="rounded-2xl rounded-tl-sm overflow-hidden shadow-sm border border-black/7 dark:border-white/6">
+                  {@html msg.content}
+                </div>
+              <!-- Render text content -->
+              {:else}
+                <div class="border rounded-2xl rounded-tl-sm px-4 py-3 text-[14px] leading-relaxed msg-bubble shadow-sm
+                            bg-white hover:bg-gray-50 dark:bg-[#141419] dark:hover:bg-[#18181e] border-black/7 dark:border-white/6
+                            text-black/80 dark:text-white/85 transition-colors">
+                  {#if msg.content === '' && isLoading}
+                    <div class="flex gap-1.5 items-center py-1">
+                      <div class="dot-1 w-1.5 h-1.5 rounded-full bg-violet-400"></div>
+                      <div class="dot-2 w-1.5 h-1.5 rounded-full bg-violet-400"></div>
+                      <div class="dot-3 w-1.5 h-1.5 rounded-full bg-violet-400"></div>
+                    </div>
+                  {:else}
+                    {msg.content}
+                  {/if}
+                </div>
+              {/if}
 
               {#if msg.content}
                 <div class="msg-actions flex gap-1.5">

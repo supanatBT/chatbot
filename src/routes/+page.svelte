@@ -3,10 +3,11 @@
   import Sidebar from '$lib/components/Sidebar.svelte';
   import Header from '$lib/components/Header.svelte';
   import Messages from '$lib/components/Messages.svelte';
+  import { sendChatMessage, createNewChatState, isImageContent, type ChatState } from '$lib/services/chatService';
 
   type Role = 'user' | 'assistant';
   interface Message { id: string; role: Role; content: string; timestamp?: number }
-  interface Session { id: string; title: string; messages: Message[] }
+  interface Session { id: string; title: string; messages: Message[]; backendState?: ChatState }
 
   // ── State ──────────────────────────────────────────────────────
   let sessions: Session[] = $state(
@@ -31,6 +32,9 @@
     typeof localStorage !== 'undefined' ? localStorage.getItem('theme') !== 'light' : true
   );
   let abortController: AbortController | null = null;
+  
+  // Backend chat state - tracks state needed for each session
+  let backendStates = $state<Record<string, ChatState>>({});
 
   // sync dark class on <html> whenever isDark changes
   $effect(() => {
@@ -115,14 +119,16 @@
       id: uid(),
       title: firstMsg.slice(0, 45) + (firstMsg.length > 45 ? '…' : ''),
       messages: [],
+      backendState: createNewChatState(),
     };
     sessions = [s, ...sessions];
+    backendStates[s.id] = createNewChatState();
     currentId = s.id;
     save();
     return s;
   }
 
-  // ── Send (streaming) ───────────────────────────────────────────
+  // ── Send (to Gradio backend) ──────────────────────────────────
   async function send() {
     const text = input.trim();
     if (!text || isLoading) return;
@@ -154,35 +160,80 @@
     );
 
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: currentSession?.messages.slice(0, -1).map(m => ({ role: m.role, content: m.content })) ?? [],
-        }),
-        signal: abortController.signal,
-      });
+      // Get current backend state for this session
+      let backendState = backendStates[session.id];
+      if (!backendState) {
+        backendState = createNewChatState();
+        backendStates[session.id] = backendState;
+      }
 
-      if (res.ok && res.body) {
-        const reader = res.body.getReader();
-        const dec = new TextDecoder();
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          aiMsg.content += dec.decode(value, { stream: true });
-          sessions = sessions.map(s =>
-            s.id === currentId
-              ? { ...s, messages: [...s.messages.slice(0, -1), { ...aiMsg }] }
-              : s
-          );
-          await scrollBottom();
+      // Send message to Gradio backend
+      const result = await sendChatMessage(text, backendState);
+
+      // Update backend state for next turn
+      backendState = {
+        chatHistory: result.chatHistory,
+        lastPids: result.lastPids,
+        sessionId: result.sessionId,
+        lastVit: result.lastVit,
+        lastGraph: result.lastGraph,
+      };
+      backendStates[session.id] = backendState;
+
+      // Update AI message with response
+      const responseMessages = result.response.chatbotUi;
+      
+      if (responseMessages && responseMessages.length > 0) {
+        // Get the last assistant message from response
+        const lastAssistantMsg = responseMessages[responseMessages.length - 1];
+        
+        aiMsg.content = lastAssistantMsg.content || '';
+        
+        sessions = sessions.map(s =>
+          s.id === currentId
+            ? { ...s, messages: [...s.messages.slice(0, -1), { ...aiMsg }] }
+            : s
+        );
+        
+        // If there are multiple assistant messages (e.g., text + image), add them separately
+        if (responseMessages.length > 1 && lastAssistantMsg.role === 'assistant') {
+          for (let i = 0; i < responseMessages.length - 1; i++) {
+            const prevMsg = responseMessages[i];
+            if (prevMsg.role === 'assistant' && isImageContent(prevMsg.content)) {
+              const imgMsg: Message = {
+                id: uid(),
+                role: 'assistant',
+                content: prevMsg.content,
+                timestamp: Date.now(),
+              };
+              sessions = sessions.map(s =>
+                s.id === currentId
+                  ? { ...s, messages: [...s.messages, imgMsg] }
+                  : s
+              );
+            }
+          }
         }
       } else {
-        throw new Error('no stream');
+        aiMsg.content = '❌ No response from backend';
       }
+
+      await scrollBottom();
     } catch (err: any) {
       if (err.name !== 'AbortError') {
-        await mockStream(aiMsg, text);
+        console.error('Chat error:', err);
+        const errorMsg = err instanceof Error 
+          ? err.message 
+          : typeof err === 'string' 
+            ? err 
+            : 'Failed to send message. Check console for details.';
+        
+        aiMsg.content = `❌ ${errorMsg}\n\n💡 Backend URL: http://localhost:7860\n⚠️ Make sure: 1) Backend is running (python chatbot_v4.py)\n2) Port 7860 is available`;
+        sessions = sessions.map(s =>
+          s.id === currentId
+            ? { ...s, messages: [...s.messages.slice(0, -1), { ...aiMsg }] }
+            : s
+        );
       } else if (!aiMsg.content) {
         aiMsg.content = '_(generation stopped)_';
         sessions = sessions.map(s =>
@@ -197,23 +248,6 @@
     isLoading = false;
     abortController = null;
     await scrollBottom();
-  }
-
-  // ── Mock fallback (remove when /api/chat is ready) ─────────────
-  async function mockStream(aiMsg: Message, prompt: string) {
-    const text = `This is a mock response for: "${prompt.slice(0, 40)}…"\n\nConnect \`src/routes/api/chat/+server.ts\` to replace this with real streaming output from OpenAI or another provider.`;
-    for (let i = 0; i < text.length; i++) {
-      aiMsg.content = text.slice(0, i + 1);
-      sessions = sessions.map(s =>
-        s.id === currentId
-          ? { ...s, messages: [...s.messages.slice(0, -1), { ...aiMsg }] }
-          : s
-      );
-      if (i % 4 === 0) {
-        await new Promise(r => setTimeout(r, 14));
-        await scrollBottom();
-      }
-    }
   }
 
   // ── Stop / Regenerate ──────────────────────────────────────────
@@ -247,7 +281,48 @@
         : s
     );
 
-    await mockStream(aiMsg, last.content);
+    try {
+      // Get current backend state for this session
+      let backendState = backendStates[currentId];
+      if (!backendState) {
+        backendState = createNewChatState();
+        backendStates[currentId] = backendState;
+      }
+
+      // Regenerate using the same message
+      const result = await sendChatMessage(last.content, backendState);
+
+      // Update backend state
+      backendState = {
+        chatHistory: result.chatHistory,
+        lastPids: result.lastPids,
+        sessionId: result.sessionId,
+        lastVit: result.lastVit,
+        lastGraph: result.lastGraph,
+      };
+      backendStates[currentId] = backendState;
+
+      const responseMessages = result.response.chatbotUi;
+      if (responseMessages && responseMessages.length > 0) {
+        const lastAssistantMsg = responseMessages[responseMessages.length - 1];
+        aiMsg.content = lastAssistantMsg.content || '';
+        
+        sessions = sessions.map(s =>
+          s.id === currentId
+            ? { ...s, messages: [...s.messages.slice(0, -1), { ...aiMsg }] }
+            : s
+        );
+      }
+    } catch (err: any) {
+      console.error('Regenerate error:', err);
+      aiMsg.content = `❌ ${err instanceof Error ? err.message : 'Failed to regenerate'}`;
+      sessions = sessions.map(s =>
+        s.id === currentId
+          ? { ...s, messages: [...s.messages.slice(0, -1), { ...aiMsg }] }
+          : s
+      );
+    }
+
     save();
     isLoading = false;
     abortController = null;
