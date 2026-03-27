@@ -101,7 +101,6 @@
   }
 
   function clearAll() {
-    if (!confirm('Clear all chat history?')) return;
     sessions = [];
     currentId = null;
     save();

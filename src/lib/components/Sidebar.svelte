@@ -75,7 +75,7 @@
   <!-- Footer -->
   <div class="p-3 border-t border-black/6 dark:border-white/6">
     <button
-      onclick={onClearAll}
+      onclick={(e) => { e.preventDefault(); onClearAll(); }}
       class="w-full mono text-[10px] tracking-wide
              text-zinc-800 dark:text-white
              hover:text-rose-500 dark:hover:text-rose-400
