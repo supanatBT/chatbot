@@ -1,5 +1,5 @@
 <script lang="ts">
-  interface Message { id: string; role: 'user' | 'assistant'; content: string; timestamp?: number }
+  interface Message { id: string; role: 'user' | 'assistant'; content: string; timestamp?: number; image?: string }
 
   interface Props {
     messages: Message[];
@@ -65,9 +65,34 @@
         {#if msg.role === 'user'}
           <div class="flex flex-col items-end gap-1.5">
             <span class="mono text-[9px] uppercase tracking-widest text-black/35 dark:text-white/25 font-medium">You</span>
-            <div class="max-w-[82%] bg-violet-600 hover:bg-violet-700 text-white rounded-2xl rounded-tr-sm px-4 py-3 text-[14px] leading-relaxed msg-bubble shadow-sm transition-colors">
-              {msg.content}
-            </div>
+            
+            <!-- Image thumbnail (if present) -->
+            {#if msg.image}
+              <button
+                onclick={() => {
+                  if (msg.image) {
+                    selectedImage = msg.image;
+                  }
+                }}
+                class="max-w-[82%] rounded-2xl rounded-tr-sm overflow-hidden shadow-sm border border-violet-300 dark:border-violet-500/30
+                       hover:shadow-lg hover:border-violet-400 dark:hover:border-violet-500 transition-all cursor-pointer"
+                title="Click to view full size"
+              >
+                <img
+                  src={msg.image}
+                  alt="User uploaded image"
+                  class="w-full h-auto max-h-64 object-cover"
+                />
+              </button>
+            {/if}
+            
+            <!-- Text content (if present) -->
+            {#if msg.content && msg.content !== '📷'}
+              <div class="max-w-[82%] bg-violet-600 hover:bg-violet-700 text-white rounded-2xl rounded-tr-sm px-4 py-3 text-[14px] leading-relaxed msg-bubble shadow-sm transition-colors">
+                {msg.content}
+              </div>
+            {/if}
+            
             <div class="msg-actions">
               <button
                 onclick={(e) => onCopy(msg.content, e.currentTarget)}
