@@ -532,8 +532,7 @@ def generate_datasheet(product_id: str) -> str:
 
     # Header
     draw.rectangle([0, 0, W, HEADER_H], fill=(20, 50, 100))
-    draw.text((PAD, 9),  "MOVEX", fill=(255, 200, 0),   font=f_brand)
-    draw.text((94, 16),  f"Product Datasheet — {p.get('Ref', pid)}",
+    draw.text((PAD, 16),  f"Product Datasheet {p.get('Ref', pid)}",
               fill=(255, 255, 255), font=f_title)
 
     # Drawing area

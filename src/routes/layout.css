@@ -1,0 +1,20 @@
+@import 'tailwindcss';
+@plugin 'flowbite/plugin';
+@custom-variant dark (&:where(.dark, .dark *));
+
+@source "../node_modules/flowbite-svelte/dist";
+@source "../node_modules/flowbite-svelte-icons/dist";
+
+@theme {
+    --color-snow-50: #f8f9fa;
+    --color-snow-100: #eceff2;
+    --color-snow-200: #d6dce1;
+    --color-snow-300: #b2bec7;
+    --color-snow-400: #889ba8;
+    --color-snow-500: #697e8e;
+    --color-snow-600: #546775;
+    --color-snow-700: #45535f;
+    --color-snow-800: #3c4750;
+    --color-snow-900: #353d45;
+    --color-snow-950: #23292e;
+}
