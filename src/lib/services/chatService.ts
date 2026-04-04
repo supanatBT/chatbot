@@ -34,13 +34,6 @@ async function getClient(): Promise<Client> {
   return clientInstance;
 }
 
-/**
- * Send a message to the chatbot and get a response
- * @param userText - The user's message
- * @param state - Current chat state (history, PIDs, session ID, etc.)
- * @param imageFile - Optional image file to send with the message
- * @returns Updated chat state and response
- */
 export async function sendChatMessage(
   userText: string,
   state: ChatState,
@@ -55,12 +48,15 @@ export async function sendChatMessage(
       sessionId: state.sessionId,
     });
 
-    // Gradio Blocks ต้องส่งเป็น positional arguments (array) ไม่ใช่ keyword arguments
-    // order ต้องตรงกับ _inputs ใน chatbot_v4.py:
-    // [txt_input, img_input_ui, chat_state, last_pids_state, session_state, last_vit_state, last_graph_state]
+    // แปลง File → Blob ก่อนส่ง Gradio (gr.Image รับ Blob/URL ไม่รับ File object)
+    let imagePayload: Blob | null = null;
+    if (imageFile) {
+      imagePayload = new Blob([await imageFile.arrayBuffer()], { type: imageFile.type });
+    }
+
     const result = await client.predict('chat_interaction', [
       userText,                    // txt_input
-      imageFile || null,           // img_input_ui
+      imagePayload,                // img_input_ui
       state.chatHistory,           // chat_state
       state.lastPids,              // last_pids_state
       state.sessionId,             // session_state
@@ -83,7 +79,6 @@ export async function sendChatMessage(
       lastGraphState,
     ] = result.data as any[];
 
-    // Convert response into unified ChatMessage format
     const formattedMessages: ChatMessage[] = (chatbotUi || []).map((msg: any) => ({
       role: msg.role || 'assistant',
       content: msg.content || '',
@@ -117,9 +112,6 @@ export async function sendChatMessage(
   }
 }
 
-/**
- * Reset the chat state for a new conversation
- */
 export function createNewChatState(): ChatState {
   return {
     chatHistory: [],
@@ -130,19 +122,12 @@ export function createNewChatState(): ChatState {
   };
 }
 
-/**
- * Check if a message content is an image (HTML img tag)
- */
 export function isImageContent(content: string): boolean {
   return content.startsWith('<img');
 }
 
-/**
- * Disconnect the client
- */
 export async function disconnectClient(): Promise<void> {
   if (clientInstance) {
-    // Gradio client doesn't have explicit disconnect, but we can nullify it
     clientInstance = null;
   }
 }
