@@ -58,7 +58,7 @@
   // ── Derived ────────────────────────────────────────────────────
   let currentSession = $derived(sessions.find(s => s.id === currentId) ?? null);
   let messages = $derived(currentSession?.messages ?? []);
-  let canSend = $derived(input.trim().length > 0 && !isLoading);
+  let canSend = $derived((input.trim().length > 0 || !!selectedImage) && !isLoading);
 
   // ── Refs ───────────────────────────────────────────────────────
   let messagesEl: HTMLDivElement | undefined = $state(undefined);
@@ -77,7 +77,20 @@
 
   function save() {
     if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('chat_sessions', JSON.stringify(sessions));
+      // strip base64 image content ออกก่อน save เพื่อไม่ให้ localStorage เต็ม
+      const sessionsToSave = sessions.map(s => ({
+        ...s,
+        messages: s.messages.map(m => ({
+          ...m,
+          image: undefined,           // ลบ image preview (dataUrl)
+          content: isImageContent(m.content) ? '[datasheet]' : m.content,
+        })),
+      }));
+      try {
+        localStorage.setItem('chat_sessions', JSON.stringify(sessionsToSave));
+      } catch (e) {
+        console.warn('localStorage full — skipping save');
+      }
     }
   }
 
@@ -147,7 +160,6 @@
 
     const session = getOrCreate(text || '📷 Image');
     
-    // Convert image to data URL if present
     let imageDataUrl: string | undefined = undefined;
     if (selectedImage) {
       imageDataUrl = await fileToDataUrl(selectedImage);
@@ -155,7 +167,6 @@
     
     const userMsg: Message = { id: uid(), role: 'user', content: text || '📷', timestamp: Date.now(), image: imageDataUrl };
     
-    // Update session with user message
     sessions = sessions.map(s => 
       s.id === session.id 
         ? { ...s, messages: [...s.messages, userMsg] }
@@ -171,7 +182,6 @@
 
     const aiMsg: Message = { id: uid(), role: 'assistant', content: '', timestamp: Date.now() };
     
-    // Update session with empty AI message
     sessions = sessions.map(s =>
       s.id === session.id
         ? { ...s, messages: [...s.messages, aiMsg] }
@@ -179,59 +189,72 @@
     );
 
     try {
-      // Get current backend state for this session
-      let backendState = backendStates[session.id];
-      if (!backendState) {
-        backendState = createNewChatState();
-        backendStates[session.id] = backendState;
+      // 1. ดึง State ปัจจุบัน
+      let backendState = backendStates[session.id] || createNewChatState();
+
+      // 2. กรอง History ให้สะอาด (ลบ <img> tags และ Base64 ออก) เพื่อส่งให้ AI
+      const cleanHistoryForAI = session.messages.map(msg => ({
+        role: msg.role,
+        content: msg.content.replace(/<[^>]*>/g, "").trim()
+      })).filter(msg => msg.content !== "");
+
+      // 3. พิเศษ: ถ้ามีการส่ง "รูปภาพใหม่" ให้ล้างค่า lastPids context ของเดิมทิ้ง
+      let currentPids = backendState.lastPids;
+      if (selectedImage) {
+        console.log("New image detected: Clearing lastPids context to avoid duplicate datasheet");
+        currentPids = []; 
       }
 
-      // Send message to Gradio backend with optional image
-      const result = await sendChatMessage(text, backendState, selectedImage || undefined);
+      // 4. สร้าง State ที่ผ่านการทำความสะอาดแล้วเพื่อส่งไป Backend
+      const sanitizedState = {
+        ...backendState,
+        chatHistory: cleanHistoryForAI,
+        lastPids: currentPids
+      };
 
-      // Update backend state for next turn
-      backendState = {
+      // 5. ส่งไปยัง Backend (Gradio)
+      const result = await sendChatMessage(text, sanitizedState, selectedImage || undefined);
+
+      // 6. อัปเดต State ล่าสุดกลับมาเก็บไว้ในฝั่ง Frontend
+      backendStates[session.id] = {
         chatHistory: result.chatHistory,
         lastPids: result.lastPids,
         sessionId: result.sessionId,
         lastVit: result.lastVit,
         lastGraph: result.lastGraph,
       };
-      backendStates[session.id] = backendState;
 
-      // Update AI message with response
+      // 7. จัดการแสดงผลคำตอบจาก AI
       const responseMessages = result.response.chatbotUi;
-      
       if (responseMessages && responseMessages.length > 0) {
-        // Get the last assistant message from response
-        const lastAssistantMsg = responseMessages[responseMessages.length - 1];
-        
-        aiMsg.content = lastAssistantMsg.content || '';
-        
+        // chatbotUi คือ history ทั้งหมด — เอาเฉพาะ messages ใหม่จาก turn นี้
+        // โดยนับจาก index ที่เราส่งไป (cleanHistoryForAI.length) บวก user message ที่เพิ่งส่ง (+1)
+        const prevCount = cleanHistoryForAI.length + 1; // +1 = user message turn นี้
+        const newMessages = responseMessages.slice(prevCount);
+
+        const textMsgs = newMessages.filter((m: any) => m.role === 'assistant' && !isImageContent(m.content));
+        const imgMsgs  = newMessages.filter((m: any) => m.role === 'assistant' && isImageContent(m.content));
+
+        // แสดง text reply
+        const textMsg = textMsgs[textMsgs.length - 1] ?? newMessages[0];
+        aiMsg.content = textMsg?.content || '';
         sessions = sessions.map(s =>
           s.id === currentId
             ? { ...s, messages: [...s.messages.slice(0, -1), { ...aiMsg }] }
             : s
         );
-        
-        // If there are multiple assistant messages (e.g., text + image), add them separately
-        if (responseMessages.length > 1 && lastAssistantMsg.role === 'assistant') {
-          for (let i = 0; i < responseMessages.length - 1; i++) {
-            const prevMsg = responseMessages[i];
-            if (prevMsg.role === 'assistant' && isImageContent(prevMsg.content)) {
-              const imgMsg: Message = {
-                id: uid(),
-                role: 'assistant',
-                content: prevMsg.content,
-                timestamp: Date.now(),
-              };
-              sessions = sessions.map(s =>
-                s.id === currentId
-                  ? { ...s, messages: [...s.messages, imgMsg] }
-                  : s
-              );
-            }
-          }
+
+        // append image bubble แยกต่างหาก (เฉพาะ turn นี้เท่านั้น)
+        for (const img of imgMsgs) {
+          const imgMsg: Message = {
+            id: uid(),
+            role: 'assistant',
+            content: img.content,
+            timestamp: Date.now(),
+          };
+          sessions = sessions.map(s =>
+            s.id === currentId ? { ...s, messages: [...s.messages, imgMsg] } : s
+          );
         }
       } else {
         aiMsg.content = '❌ No response from backend';
@@ -241,36 +264,23 @@
     } catch (err: any) {
       if (err.name !== 'AbortError') {
         console.error('Chat error:', err);
-        const errorMsg = err instanceof Error 
-          ? err.message 
-          : typeof err === 'string' 
-            ? err 
-            : 'Failed to send message. Check console for details.';
-        
-        aiMsg.content = `❌ ${errorMsg}\n\n💡 Backend URL: http://localhost:7860\n⚠️ Make sure: 1) Backend is running (python chatbot_v4.py)\n2) Port 7860 is available`;
-        sessions = sessions.map(s =>
-          s.id === currentId
-            ? { ...s, messages: [...s.messages.slice(0, -1), { ...aiMsg }] }
-            : s
-        );
-      } else if (!aiMsg.content) {
-        aiMsg.content = '_(generation stopped)_';
+        aiMsg.content = `❌ เกิดข้อผิดพลาดในการเชื่อมต่อกับ Backend`;
         sessions = sessions.map(s =>
           s.id === currentId
             ? { ...s, messages: [...s.messages.slice(0, -1), { ...aiMsg }] }
             : s
         );
       }
+    } finally {
+      save();
+      isLoading = false;
+      abortController = null;
+      selectedImage = null;
+      if (imageInputEl) imageInputEl.value = '';
+      await scrollBottom();
     }
-
-    save();
-    isLoading = false;
-    abortController = null;
-    selectedImage = null;
-    if (imageInputEl) imageInputEl.value = '';
-    await scrollBottom();
   }
-
+  
   // ── Stop / Regenerate ──────────────────────────────────────────
   function stop() {
     abortController?.abort();
@@ -560,11 +570,11 @@
 
           <button
             onclick={send}
-            disabled={!canSend && !selectedImage}
+            disabled={!canSend}
             title="Send message (Enter)"
             class="w-9 h-9 mb-1 rounded-xl flex items-center justify-center shrink-0
                    transition-all duration-150
-                   {(canSend || selectedImage)
+                   {canSend
                      ? 'bg-violet-600 hover:bg-violet-500 text-white hover:scale-110 active:scale-95'
                      : 'bg-black/5 dark:bg-white/5 text-black/20 dark:text-white/20 cursor-not-allowed'}"
           >

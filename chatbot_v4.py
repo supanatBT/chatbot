@@ -458,7 +458,8 @@ def generate_datasheet(product_id: str) -> str:
         return f"ไม่พบสินค้า '{product_id}' ในระบบ กรุณาตรวจสอบรหัสสินค้า"
 
     if pid in _datasheet_cache:
-        return f"ส่ง datasheet ของ {product_db[pid].get('Ref', pid)} แล้ว"
+        # ตอบกลับเพื่อให้ Gemini รู้ว่า "แสดงไปแล้ว" ไม่ต้องพยายามสร้างใหม่หรือเรียก Tool ซ้ำ
+        return f"ข้อมูล Datasheet ของ {pid} ได้ถูกแสดงบนหน้าจอเรียบร้อยแล้วครับ ลูกค้าสามารถดูรูปและรายละเอียดด้านบนได้เลย"
 
     p = product_db[pid]
 
@@ -693,6 +694,9 @@ def _build_system_prompt(json_context: str, graph_summary: str,vit_signal=None) 
    - "แบบ" / "แสดงแบบ" / "ขอดูแบบ"
    → ใช้ product_id ของ rank 1 ใน RAG Context หรือ product ที่ลูกค้าพูดถึง
    → หลังจากแสดง datasheet แล้ว บอก spec สั้นๆ ด้วย
+   → (กฎเพิ่มเติม): ห้ามเรียก generate_datasheet ซ้ำสำหรับสินค้าเดิม 
+     หากในประวัติการสนทนา (Chat History) เพิ่งมีการแสดง datasheet ของสินค้านั้นไปแล้ว 
+     ยกเว้นลูกค้าจะสั่ง "ขอรูปอีกครั้ง" หรือ "ขอดูรุ่นอื่น"
 """
 
 
@@ -749,8 +753,15 @@ def chat_interaction(
     # ── Effective text — carry-over last_pids ───────────────
     effective_text = user_text or "ลูกค้าส่งรูปภาพมา"
     if is_followup and last_pids:
-        pid_prefix = " ".join(last_pids[:3])
-        effective_text = f"{pid_prefix} {user_text}"
+        # ถ้าเป็นคำถามต่อเนื่อง ให้ส่ง PID เข้าไปในระบบค้นหา (Internal) 
+        # แต่อย่าส่งเข้าไปใน prompt หลักของ Gemini ทั้งหมดถ้าไม่ได้ถามหา Drawing
+        if not any(word in user_text for word in ["ขอรูป", "ขอดู", "drawing", "datasheet"]):
+             # ถ้าถามคำถามทั่วไป ไม่ต้องเน้น PID ใน text มากเกินไป 
+             # แค่ให้ Retriever รู้ก็พอ
+             pass 
+        else:
+             pid_prefix = " ".join(last_pids[:1])
+             effective_text = f"{pid_prefix} {user_text}"
 
     query_type = "image" if img_input is not None else "general"
 
@@ -758,7 +769,7 @@ def chat_interaction(
 
     # ── Start turn log ──────────────────────────────────────
     turn_log = logger.start_turn(
-        session_id=session_id,
+        session_id=session_id, 
         user_text=user_text,
         has_image=img_input is not None,
         last_pid=" ".join(last_pids) if last_pids else "",
@@ -895,12 +906,20 @@ def chat_interaction(
         graph_summary = _build_graph_summary(retrieval_result.graph_result)
         system_instruction = _build_system_prompt(json_context, graph_summary, vit_signal=vit_sig)
 
+        # --- สร้าง gemini_history (mirror วิธีที่ Svelte ทำ) ---
         gemini_history = []
         for msg in chat_history:
-            clean = re.sub(r'<[^>]+>', '', msg.get("content", "")).strip()
-            if clean:
-                role = "model" if msg["role"] == "assistant" else "user"
-                gemini_history.append({"role": role, "parts": [clean]})
+            content = msg.get("content", "")
+
+            # ลบ HTML tags ทั้งหมด (img base64, styles) — เหมือน Svelte ทำ replace(/<[^>]*>/g, "")
+            clean = re.sub(r'<[^>]+>', '', content).strip()
+
+            # skip message ที่เป็น <img> ล้วน ๆ (หลังลบ tag แล้วว่างเปล่า)
+            if not clean:
+                continue
+
+            role = "model" if msg["role"] == "assistant" else "user"
+            gemini_history.append({"role": role, "parts": [clean]})
 
         img_part = None
         if img_input:
@@ -935,21 +954,32 @@ def chat_interaction(
                 pass
             return ""
 
-        ai_reply = _extract_text(response)
+        # --- 1. ดึงข้อความตอบกลับรอบแรก ---
+        ai_reply = _extract_text(response).strip()
+        datasheet_b64_list = []
 
-        # retry ครั้งเดียว ถ้า Gemini return empty response และยังไม่มี tool call
-        if not ai_reply and not _tool_call_log:
+        # --- 2. ตรวจสอบและแก้ไข (Retry / Auto-Reply) ---
+        # กรณีที่ 1: มีการเรียก datasheet สำเร็จ แต่ ai_reply ว่างเปล่า
+        if datasheet_b64_list and not ai_reply:
+            pid_label = _tool_call_log[-1]["args"].get("product_id", "สินค้า")
+            ai_reply = f"นี่คือข้อมูล datasheet ของ **{pid_label}** ที่คุณขอครับ"
+            print(f"[INFO] Auto-generated reply for datasheet: {pid_label}")
+
+        # กรณีที่ 2: ai_reply ยังว่างอยู่ (ไม่ว่าจะมี tool call อื่นๆ หรือไม่) ให้ลอง Retry
+        if not ai_reply:
             print("[WARN] Gemini returned empty response — retrying once")
-            response = chat_session.send_message("กรุณาดำเนินการตามที่ลูกค้าขอครับ")
-            ai_reply = _extract_text(response)
+            # บังคับให้ Gemini สรุปคำตอบจาก Tool result หรือ Context
+            retry_response = chat_session.send_message("กรุณาสรุปคำตอบสั้นๆ ให้ลูกค้าทราบด้วยครับ")
+            ai_reply = _extract_text(retry_response).strip()
 
+        # กรณีที่ 3: ถ้า Retry แล้วยังว่างอีก ให้ใช้ Default Message
         if not ai_reply:
             ai_reply = "ขออภัยครับ ระบบไม่สามารถสร้างคำตอบได้ในขณะนี้ กรุณาลองถามใหม่อีกครั้ง"
 
         # ── Inject datasheet images ──────────────────────────────────
         # generate_datasheet stores PNG in _datasheet_cache[resolved_pid]
         # _tool_call_log already has the call recorded by _tracked
-        datasheet_b64_list = []
+     
         for tc in _tool_call_log:
             if tc["tool_name"] == "generate_datasheet" and tc["success"]:
                 req = tc["args"].get("product_id", "").strip()
