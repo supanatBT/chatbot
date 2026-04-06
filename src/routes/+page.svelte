@@ -231,7 +231,7 @@
         // โดยนับจาก index ที่เราส่งไป (cleanHistoryForAI.length) บวก user message ที่เพิ่งส่ง (+1)
         const prevCount = cleanHistoryForAI.length + 1; // +1 = user message turn นี้
         const newMessages = responseMessages.slice(prevCount);
-
+        console.log('DEBUG', { prevCount, totalMsgs: responseMessages.length, newMsgsCount: newMessages.length, newMessages });
         const textMsgs = newMessages.filter((m: any) => m.role === 'assistant' && !isImageContent(m.content));
         const imgMsgs  = newMessages.filter((m: any) => m.role === 'assistant' && isImageContent(m.content));
 
