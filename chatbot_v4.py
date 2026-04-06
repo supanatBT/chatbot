@@ -268,7 +268,10 @@ def _tracked(fn):
             entry["args"] = {**dict(zip(params, args)), **kwargs}
             result = fn(*args, **kwargs)
             entry["result"] = result
-            return result
+            
+            # 👇 แก้ไขจาก return result เป็น return dict เพื่อให้ Gemini SDK ทำงานได้
+            return {"result": result} 
+            
         except Exception as e:
             entry["success"] = False
             entry["result"]  = str(e)
@@ -674,6 +677,11 @@ def _build_system_prompt(json_context: str, graph_summary: str,vit_signal=None) 
 - ถ้า final_score < 0.2 ทุกรุ่น → แจ้งว่าข้อมูลไม่เพียงพอ
 - ห้ามเรียก Tool เพื่อตอบ spec ที่อยู่ใน RAG Context แล้ว
 
+🔴 กฎเด็ดขาดเรื่อง Compatible (ห้ามละเมิด):
+- คำถามเรื่อง "ใช้คู่กับโซ่อะไร" / "compatible chain" / "โซ่ที่ใช้ได้" / "ใช้สเตอร์ตัวไหน"
+  → ตอบจาก [GraphRAG Context] เท่านั้น ห้ามใช้ field "compatible_chain" หรือ "series" จาก RAG Context (JSON) โดยเด็ดขาด
+  → ถ้า GraphRAG Context ว่างหรือไม่มี compatible → ตอบว่า "ไม่มีข้อมูล compatible ในระบบครับ" ห้ามคาดเดาหรืออ้างอิงจาก JSON field
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔧 กฎการใช้ Tool (เรียกเมื่อจำเป็นเท่านั้น)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -903,6 +911,28 @@ def chat_interaction(
         # PHASE 5: Gemini Agent
         # ════════════════════════════════════════════════════
         json_context  = json.dumps(llm_context, ensure_ascii=False, indent=2)
+
+        # ── Graph fallback: ถ้า graph ไม่มี seeds ให้ traverse จาก rank-1 โดยตรง ──
+        _gr = retrieval_result.graph_result
+        if (not _gr or not _gr.seed_products) and ranked_result.products:
+            _top_pid = ranked_result.products[0].product_id
+            try:
+                _compatible   = kg.get_compatible_products(_top_pid)
+                _same_series  = kg.get_same_series(_top_pid)
+                _mat_details  = kg.get_material_details(_top_pid)
+                _proc_details = kg.get_process_details(_top_pid)
+                if _compatible or _same_series or _mat_details or _proc_details:
+                    _fallback_gr = GraphResult()
+                    _fallback_gr.seed_products    = [_top_pid]
+                    _fallback_gr.compatible       = _compatible
+                    _fallback_gr.same_series      = _same_series
+                    _fallback_gr.material_details = _mat_details
+                    _fallback_gr.process_details  = _proc_details
+                    retrieval_result.graph_result = _fallback_gr
+                    raw_refs_html += f"**Graph (fallback rank1):** seeds=[{_top_pid}] compatible={_compatible[:3]}\n"
+            except Exception as _e:
+                print(f"[WARN] graph fallback failed: {_e}")
+
         graph_summary = _build_graph_summary(retrieval_result.graph_result)
         system_instruction = _build_system_prompt(json_context, graph_summary, vit_signal=vit_sig)
 
@@ -956,30 +986,9 @@ def chat_interaction(
 
         # --- 1. ดึงข้อความตอบกลับรอบแรก ---
         ai_reply = _extract_text(response).strip()
+
+        # --- 2. Populate datasheet_b64_list ก่อน (ต้องมาก่อน check ทุกอย่าง) ---
         datasheet_b64_list = []
-
-        # --- 2. ตรวจสอบและแก้ไข (Retry / Auto-Reply) ---
-        # กรณีที่ 1: มีการเรียก datasheet สำเร็จ แต่ ai_reply ว่างเปล่า
-        if datasheet_b64_list and not ai_reply:
-            pid_label = _tool_call_log[-1]["args"].get("product_id", "สินค้า")
-            ai_reply = f"นี่คือข้อมูล datasheet ของ **{pid_label}** ที่คุณขอครับ"
-            print(f"[INFO] Auto-generated reply for datasheet: {pid_label}")
-
-        # กรณีที่ 2: ai_reply ยังว่างอยู่ (ไม่ว่าจะมี tool call อื่นๆ หรือไม่) ให้ลอง Retry
-        if not ai_reply:
-            print("[WARN] Gemini returned empty response — retrying once")
-            # บังคับให้ Gemini สรุปคำตอบจาก Tool result หรือ Context
-            retry_response = chat_session.send_message("กรุณาสรุปคำตอบสั้นๆ ให้ลูกค้าทราบด้วยครับ")
-            ai_reply = _extract_text(retry_response).strip()
-
-        # กรณีที่ 3: ถ้า Retry แล้วยังว่างอีก ให้ใช้ Default Message
-        if not ai_reply:
-            ai_reply = "ขออภัยครับ ระบบไม่สามารถสร้างคำตอบได้ในขณะนี้ กรุณาลองถามใหม่อีกครั้ง"
-
-        # ── Inject datasheet images ──────────────────────────────────
-        # generate_datasheet stores PNG in _datasheet_cache[resolved_pid]
-        # _tool_call_log already has the call recorded by _tracked
-     
         for tc in _tool_call_log:
             if tc["tool_name"] == "generate_datasheet" and tc["success"]:
                 req = tc["args"].get("product_id", "").strip()
@@ -992,11 +1001,22 @@ def chat_interaction(
                 if b64:
                     datasheet_b64_list.append(b64)
 
-        # ถ้า Gemini ไม่ generate text หลัง tool call แต่ datasheet สำเร็จ
-        # ให้ใช้ default reply แทน error message
-        if datasheet_b64_list and ai_reply == "ขออภัยครับ ระบบไม่สามารถสร้างคำตอบได้ในขณะนี้ กรุณาลองถามใหม่อีกครั้ง":
-            pid_label = _tool_call_log[-1]["args"].get("product_id", "")
-            ai_reply = f"นี่คือ datasheet ของ **{pid_label}** ครับ"
+        # --- 3. ตรวจสอบและแก้ไข ai_reply ---
+        # กรณีที่ 1: datasheet สำเร็จ แต่ ai_reply ว่างเปล่า
+        if datasheet_b64_list and not ai_reply:
+            pid_label = _tool_call_log[-1]["args"].get("product_id", "สินค้า")
+            ai_reply = f"นี่คือข้อมูล datasheet ของ **{pid_label}** ที่คุณขอครับ"
+            print(f"[INFO] Auto-generated reply for datasheet: {pid_label}")
+
+        # กรณีที่ 2: ไม่มี datasheet และ ai_reply ว่าง — retry
+        if not ai_reply and not datasheet_b64_list:
+            print("[WARN] Gemini returned empty response — retrying once")
+            retry_response = chat_session.send_message("กรุณาสรุปคำตอบสั้นๆ ให้ลูกค้าทราบด้วยครับ")
+            ai_reply = _extract_text(retry_response).strip()
+
+        # กรณีที่ 3: ยังว่างอีก
+        if not ai_reply:
+            ai_reply = "ขออภัยครับ ระบบไม่สามารถสร้างคำตอบได้ในขณะนี้ กรุณาลองถามใหม่อีกครั้ง"
 
     except Exception as e:
         ai_reply  = f"❌ เกิดข้อผิดพลาด: {str(e)}"
@@ -1056,7 +1076,14 @@ def chat_interaction(
     except Exception:
         new_graph_result = last_graph_result
 
-    return (chat_history, chat_history, raw_refs_html,
+    # chatStateOut ที่ส่งกลับไปให้ Svelte ต้อง strip <img> datasheet ออก
+    # เพื่อไม่ให้ Gemini เห็น base64 ใน history แล้วเรียก generate_datasheet ซ้ำ
+    chat_state_out = [
+        msg for msg in chat_history
+        if not (msg["role"] == "assistant" and msg.get("content", "").startswith('<img'))
+    ]
+
+    return (chat_history, chat_state_out, raw_refs_html,
             new_last_pids, session_id, new_vit_signal, new_graph_result)
 
 

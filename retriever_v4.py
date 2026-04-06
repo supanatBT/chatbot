@@ -332,22 +332,22 @@ class RetrieverV4:
         self._text_search(query, score_map, series_filter=series_filter)
 
         # ════════════════════════════════════════════════
-        # LAYER 3: Multi-hop Graph Traversal
-        # inject result โดยตรง ไม่ผ่าน RRF
-        # ════════════════════════════════════════════════
-        graph_result = self._graph_traverse(
-            query=query,
-            score_map=score_map,
-            vit_signal=vit_signal,
-        )
-        result.graph_result = graph_result
-        # compat กับ logger/chatbot ที่ใช้ graph_context
-        result.graph_context = self._graph_result_to_context(graph_result)
-
-        # ════════════════════════════════════════════════
-        # LAYER 4: Confidence-Weighted RRF
+        # LAYER 3: Confidence-Weighted RRF (ย้ายขึ้นมาทำก่อน)
         # ════════════════════════════════════════════════
         ranked = self._confidence_weighted_rrf(score_map, vit_signal)
+
+        # ════════════════════════════════════════════════
+        # LAYER 4: Multi-hop Graph Traversal (ดึง Context หลังจัดอันดับ)
+        # ════════════════════════════════════════════════
+        # ดึงเอาเฉพาะ Product อันดับ 1 จาก RRF มาเป็น Seed
+        top_pid = ranked[0][0] if ranked else None
+        
+        graph_result = self._graph_traverse(
+            query=query,
+            top_pid=top_pid, # ส่งแค่อันดับ 1 เข้าไป
+        )
+        result.graph_result = graph_result
+        result.graph_context = self._graph_result_to_context(graph_result)
 
         # ════════════════════════════════════════════════
         # Build product list
@@ -647,17 +647,12 @@ class RetrieverV4:
     def _graph_traverse(
         self,
         query: str,
-        score_map: dict,
-        vit_signal: ViTSignal,
+        top_pid: Optional[str],
     ) -> GraphResult:
-        """
-        Multi-hop intent-aware graph traversal
-
-        Intent detection → เลือก edge type ที่จะ traverse
-        Inject result โดยตรงเข้า GraphResult ไม่ผ่าน RRF
-        (graph candidate ยังเพิ่มเข้า score_map สำหรับ vector search boost)
-        """
         result = GraphResult()
+        if not top_pid:
+            return result
+            
         query_lower = query.lower()
 
         # ── Detect intent ──────────────────────────────────
@@ -668,7 +663,7 @@ class RetrieverV4:
         # ── Seed products ──────────────────────────────────
         seed_ids = []
 
-         # ── เพิ่มตรงนี้ — Art.Nr. detector ───────────────────
+         # ── Art.Nr. detector (ถ้าพิมพ์รหัส 54xxx มาตรงๆ ให้ยึดรหัสนี้ก่อน) ───────────────────
         ART_NR_RE = re.compile(r'\b5[4-9]\d{3}\b')
         art_matches = ART_NR_RE.findall(query)
         if art_matches:
@@ -678,26 +673,9 @@ class RetrieverV4:
                         seed_ids.append(pid)
                         break
 
-        # 1. ViT hits (ถ้ามีรูป)
-        if vit_signal.series or vit_signal.top_pid:
-            vit_seeds = [
-                pid for pid, s in score_map.items()
-                if s.get("vit_rank") is not None
-            ]
-            seed_ids.extend(vit_seeds[:5])
-
-        # 2. Keyword hits (ถ้าไม่มีรูปหรือ ViT ไม่ hit)
-        if not seed_ids:
-            kw_hits = sorted(
-                [(pid, s["keyword"]) for pid, s in score_map.items()
-                 if s.get("keyword", 0) > 0],
-                key=lambda x: x[1], reverse=True
-            )
-            seed_ids = [pid for pid, _ in kw_hits[:5]]
-
-        # 3. Fallback: ViT series → ดึง products จาก series
-        if not seed_ids and vit_signal.series:
-            seed_ids = self.kg.get_products_by_series(vit_signal.series)[:3]
+        # 👇 ถ้าไม่มีการพิมพ์รหัส Art.Nr ให้ใช้ อันดับ 1 จาก RRF เป็น Seed แบบเดี่ยวๆ
+        if not seed_ids and top_pid:
+            seed_ids = [top_pid]
 
         if not seed_ids:
             return result
@@ -720,12 +698,6 @@ class RetrieverV4:
             f"same_series={ctx.same_series[:3]}"
         )
 
-        # เพิ่ม graph candidates เข้า score_map สำหรับ vector search boost
-        for rank, pid in enumerate(ctx.all_candidate_ids):
-            self._ensure_pid(score_map, pid)
-            if score_map[pid].get("graph", 0.0) == 0.0:
-                score_map[pid]["graph"] = float(rank)
-
         # ── Hop 2: traverse ตาม intent ────────────────────
         hop2_seeds = []
 
@@ -741,7 +713,6 @@ class RetrieverV4:
                 include_compatible=False,
                 include_same_material=(want_material or want_process),
             )
-            # ดึง material/process details จาก hop 2
             if ctx2.material_details:
                 result.material_details = ctx2.material_details
             if ctx2.process_details:
@@ -752,7 +723,6 @@ class RetrieverV4:
                 f"material={list(ctx2.material_details.keys())}"
             )
         else:
-            # ดึง material/process จาก hop 1 ถ้าไม่มี hop 2
             result.material_details = ctx.material_details
             result.process_details  = ctx.process_details
 
@@ -1008,7 +978,7 @@ class RetrieverV4:
         if not gr or not gr.seed_products:
             return None
         try:
-            ctx = GraphContext()
+            ctx = GraphContext(seed_products=gr.seed_products)
             ctx.seed_products     = gr.seed_products
             ctx.compatible_products = gr.compatible
             ctx.same_series       = gr.same_series
@@ -1019,4 +989,5 @@ class RetrieverV4:
             ))
             return ctx
         except Exception:
+            print(f"⚠️ Error converting graph context: {e}")
             return None
